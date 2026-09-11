@@ -10,6 +10,10 @@ use Tempest\Markdown\Rule;
 use Tempest\Markdown\Token;
 use Tempest\Markdown\Tokens\LinkToken;
 
+/**
+ * Adapted from the original handle parser by innocenzi.
+ * https://github.com/tempestphp/tempestphp.com/blob/48b58184b43e80ab17f4375ac95affdf6d7a3bf2/src/Markdown/HandleParser.php
+ */
 final class SocialHandleRule implements Rule, ProvidesFirstChar, ProvidesStopChar
 {
     private(set) string $firstChar = '{';
