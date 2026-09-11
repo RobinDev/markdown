@@ -259,7 +259,7 @@ final class Parser
         self::$depth++;
     }
 
-    public function comesNext(string $search, ?int $length = null, int $offset = 0): bool
+    public function comesNext(string $search, ?int $length = null, int $offset = 0, bool $caseSensitive = true): bool
     {
         $length ??= strlen($search);
 
@@ -267,7 +267,15 @@ final class Parser
             return ($this->content[$this->position + $offset] ?? null) === $search;
         }
 
-        return substr_compare($this->content, $search, $this->position + $offset, $length) === 0;
+        return (
+            substr_compare(
+                haystack: $this->content,
+                needle: $search,
+                offset: $this->position + $offset,
+                length: $length,
+                case_insensitive: ! $caseSensitive,
+            ) === 0
+        );
     }
 
     public function consume(int $length = 1): string
