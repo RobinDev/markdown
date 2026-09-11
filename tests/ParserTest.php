@@ -146,6 +146,24 @@ final class ParserTest extends ParserTestCase
     }
 
     #[Test]
+    public function test_link_remain_literal_without_registration(): void
+    {
+        $parser = new Parser(highlighter: null);
+
+        $this->assertSame('<p>Hello [alice](https://github.com/alice)</p>', $parser->parse('Hello [alice](https://github.com/alice)')->html);
+    }
+
+    #[Test]
+    public function test_removing_link_preserves_literal_syntax(): void
+    {
+        $parser = new Parser(highlighter: null)
+            ->prependRules(new SocialHandleRule())
+            ->removeRules(SocialHandleRule::class);
+
+        $this->assertSame('<p>Hello [alice](https://github.com/alice)</p>', $parser->parse('Hello [alice](https://github.com/alice)')->html);
+    }
+
+    #[Test]
     public function test_social_handles_remain_literal_without_registration(): void
     {
         $parser = new Parser(highlighter: null);

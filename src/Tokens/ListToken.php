@@ -9,6 +9,7 @@ use Tempest\Markdown\Rules\CodeRule;
 use Tempest\Markdown\Rules\ImageRule;
 use Tempest\Markdown\Rules\ItalicRule;
 use Tempest\Markdown\Rules\LinkRule;
+use Tempest\Markdown\Rules\SocialHandleRule;
 use Tempest\Markdown\Rules\TextRule;
 use Tempest\Markdown\Token;
 
@@ -26,6 +27,7 @@ final class ListToken implements Token
             new BoldRule(),
             new ItalicRule(),
             new LinkRule(),
+            new SocialHandleRule(),
             new ImageRule(),
             new CodeRule(),
             new TextRule(),

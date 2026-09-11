@@ -9,6 +9,7 @@ use Tempest\Markdown\Rules\ImageRule;
 use Tempest\Markdown\Rules\ItalicRule;
 use Tempest\Markdown\Rules\LinkRule;
 use Tempest\Markdown\Rules\QuoteRule;
+use Tempest\Markdown\Rules\SocialHandleRule;
 use Tempest\Markdown\Rules\TextRule;
 use Tempest\Markdown\Token;
 
@@ -27,6 +28,7 @@ final class QuoteToken implements Token
                 new ItalicRule(),
                 new QuoteRule(),
                 new LinkRule(),
+                new SocialHandleRule(),
                 new ImageRule(),
                 new TextRule(),
             ])
