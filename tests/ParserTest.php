@@ -2,11 +2,14 @@
 
 namespace Tempest\Markdown\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tempest\Markdown\Exceptions\MaximumNestingDepthWasExceeded;
 use Tempest\Markdown\Parser;
 use Tempest\Markdown\Rules\HeadingRule;
 use Tempest\Markdown\Rules\ParagraphRule;
+use Tempest\Markdown\Rules\SocialHandleRule;
+use Tempest\Markdown\Rules\TextRule;
 
 final class ParserTest extends ParserTestCase
 {
@@ -140,6 +143,89 @@ final class ParserTest extends ParserTestCase
 
         $this->assertTrue($parser->hasNext('apple', ';'));
         $this->assertFalse($parser->hasNext('goodbye', ';'));
+    }
+
+    #[Test]
+    public function test_social_handles_remain_literal_without_registration(): void
+    {
+        $parser = new Parser(highlighter: null);
+
+        $this->assertSame('<p>Hello {gh:alice}</p>', $parser->parse('Hello {gh:alice}')->html);
+    }
+
+    #[Test]
+    public function test_removing_social_handle_rule_preserves_literal_syntax(): void
+    {
+        $parser = new Parser(highlighter: null)
+            ->prependRules(new SocialHandleRule())
+            ->removeRules(SocialHandleRule::class);
+
+        $this->assertSame('<p>Hello {gh:alice}</p>', $parser->parse('Hello {gh:alice}')->html);
+    }
+
+    #[Test]
+    #[DataProvider('provideSocialHandleInlineContexts')]
+    public function test_registered_social_handles_render_in_inline_contexts(string $markdown, string $expectedHtml): void
+    {
+        $parser = new Parser(highlighter: null)->prependRules(new SocialHandleRule());
+
+        $this->assertSame($expectedHtml, $parser->parse($markdown)->html);
+    }
+
+    public static function provideSocialHandleInlineContexts(): array
+    {
+        return [
+            'bold' => [
+                '**Hello {gh:alice}**',
+                '<p><strong>Hello <a href="https://github.com/alice">@alice</a></strong></p>',
+            ],
+            'italic' => [
+                '*Hello {gh:alice}*',
+                '<p><em>Hello <a href="https://github.com/alice">@alice</a></em></p>',
+            ],
+            'heading' => [
+                '# Hello {gh:alice}',
+                '<h1 id="hello-gh-alice">Hello <a href="https://github.com/alice">@alice</a></h1>',
+            ],
+            'list' => [
+                '- Hello {gh:alice}',
+                '<ul><li>Hello <a href="https://github.com/alice">@alice</a></li></ul>',
+            ],
+            'quote' => [
+                '> Hello {gh:alice}',
+                '<blockquote>Hello <a href="https://github.com/alice">@alice</a></blockquote>',
+            ],
+        ];
+    }
+
+    #[Test]
+    public function test_parsing_twice_as_many_social_handles_takes_less_than_three_times_as_long(): void
+    {
+        $parser = new Parser(highlighter: null, rules: [new SocialHandleRule(), new TextRule()]);
+        $parser->parse('{gh:alice} ');
+
+        $small = str_repeat('{gh:alice} ', 8000);
+        $large = str_repeat('{gh:alice} ', 16_000);
+        $smallTimes = [];
+        $largeTimes = [];
+
+        // Compare growth using the fastest of three interleaved samples to reduce scheduling noise.
+        for ($sample = 0; $sample < 3; $sample++) {
+            $start = hrtime(true);
+            $smallHtml = $parser->parse($small)->html;
+            $smallTimes[] = hrtime(true) - $start;
+
+            $start = hrtime(true);
+            $largeHtml = $parser->parse($large)->html;
+            $largeTimes[] = hrtime(true) - $start;
+
+            $this->assertSame(8000, substr_count($smallHtml, '<a href="https://github.com/alice">@alice</a>'));
+            $this->assertSame(16_000, substr_count($largeHtml, '<a href="https://github.com/alice">@alice</a>'));
+        }
+
+        $growth = min($largeTimes) / min($smallTimes);
+
+        $this->assertLessThan(3.0, $growth, sprintf('Doubling the number of handles took %.2fx as long; expected near-linear growth.', $growth));
     }
 
     #[Test]
