@@ -17,21 +17,28 @@ final class LinkToken implements Token
     public function __construct(
         public string $content,
         public ?string $href,
+
+        // @todo(aidan-casey): This is a temporary solution to the problem that we don't support Markdown escaping yet.
+        public bool $parseContent = true,
     ) {}
 
     public function parse(Parser $parser): string
     {
-        $content = $parser
-            ->forToken($this, [
-                new CodeRule(),
-                new BoldAndItalicRule(),
-                new BoldRule(),
-                new ItalicRule(),
-                new StrikethroughRule(),
-                new ImageRule(),
-                new TextRule(),
-            ])
-            ->parse($this->content);
+        $content = $this->content;
+
+        if ($this->parseContent) {
+            $content = $parser
+                ->forToken($this, [
+                    new CodeRule(),
+                    new BoldAndItalicRule(),
+                    new BoldRule(),
+                    new ItalicRule(),
+                    new StrikethroughRule(),
+                    new ImageRule(),
+                    new TextRule(),
+                ])
+                ->parse($this->content);
+        }
 
         $href = $this->href ?? '';
         $blank = '';

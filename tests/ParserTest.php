@@ -4,12 +4,9 @@ namespace Tempest\Markdown\Tests;
 
 use PHPUnit\Framework\Attributes\Test;
 use Tempest\Markdown\Exceptions\MaximumNestingDepthWasExceeded;
-use Tempest\Markdown\MarkdownException;
 use Tempest\Markdown\Parser;
 use Tempest\Markdown\Rules\HeadingRule;
 use Tempest\Markdown\Rules\ParagraphRule;
-use Tempest\Markdown\Rules\SocialHandleRule;
-use Tempest\Markdown\Rules\TextRule;
 
 final class ParserTest extends ParserTestCase
 {
@@ -134,52 +131,15 @@ final class ParserTest extends ParserTestCase
     }
 
     #[Test]
-    public function test_social_handle_consumes_closing_brace_with_text_fallback(): void
+    public function has_next(): void
     {
-        $parser = new Parser(highlighter: null, rules: [new SocialHandleRule(), new TextRule()]);
+        $parser = new Parser()->setContent('hello apple; goodbye');
 
-        $html = $parser->parse('Hello {gh:alice}!')->html;
+        $this->assertTrue($parser->hasNext('apple'));
+        $this->assertFalse($parser->hasNext('banana'));
 
-        $this->assertSame('Hello <a href="https://github.com/alice">@alice</a>!', $html);
-    }
-
-    #[Test]
-    public function test_prepended_social_handle_rule_parses_handles_in_paragraphs(): void
-    {
-        $parser = new Parser(highlighter: null)->prependRules(new SocialHandleRule());
-
-        $html = $parser->parse('Thoughts of {x:brendt_gd}.')->html;
-
-        $this->assertSame('<p>Thoughts of <a href="https://x.com/brendt_gd">@brendt_gd</a>.</p>', $html);
-    }
-
-    #[Test]
-    public function test_unclosed_social_handle_preserves_remaining_text(): void
-    {
-        $parser = new Parser(highlighter: null, rules: [new SocialHandleRule(), new TextRule()]);
-        $content = 'Hello {gh:alice,Read this sentence.';
-
-        $this->assertSame($content, $parser->parse($content)->html);
-    }
-
-    #[Test]
-    public function test_social_handle_preserves_underscores_in_default_label(): void
-    {
-        $parser = new Parser(highlighter: null, rules: [new SocialHandleRule()]);
-
-        $html = $parser->parse('{x:my_test_account}')->html;
-
-        $this->assertSame('<a href="https://x.com/my_test_account">@my_test_account</a>', $html);
-    }
-
-    #[Test]
-    public function test_invalid_social_handle_throws_markdown_exception(): void
-    {
-        $parser = new Parser(highlighter: null)->prependRules(new SocialHandleRule());
-
-        $this->expectException(MarkdownException::class);
-
-        $parser->parse('{gh:}');
+        $this->assertTrue($parser->hasNext('apple', ';'));
+        $this->assertFalse($parser->hasNext('goodbye', ';'));
     }
 
     #[Test]

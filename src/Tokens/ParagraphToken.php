@@ -11,6 +11,7 @@ use Tempest\Markdown\Rules\ImageRule;
 use Tempest\Markdown\Rules\ItalicRule;
 use Tempest\Markdown\Rules\LinkRule;
 use Tempest\Markdown\Rules\PreRule;
+use Tempest\Markdown\Rules\SocialHandleRule;
 use Tempest\Markdown\Rules\StrikethroughRule;
 use Tempest\Markdown\Rules\TextRule;
 use Tempest\Markdown\Token;
@@ -29,6 +30,8 @@ final class ParagraphToken implements Token
             new ItalicRule(),
             new StrikethroughRule(),
             new LinkRule(),
+            // @todo(aidan-casey): We shouldn't parse social handles by default. We need to make these "sub-parsers" configurable.
+            new SocialHandleRule(),
             new ImageRule(),
             new PreRule(),
             new CodeRule(),

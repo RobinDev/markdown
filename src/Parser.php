@@ -264,7 +264,15 @@ final class Parser
         $length ??= strlen($search);
 
         if ($length === 1) {
-            return ($this->content[$this->position + $offset] ?? null) === $search;
+            $char = $this->content[$this->position + $offset] ?? null;
+
+            if ($char === null) {
+                return false;
+            }
+
+            return $caseSensitive
+                ? $char === $search
+                : strcasecmp($char, $search) === 0;
         }
 
         return (
@@ -276,6 +284,27 @@ final class Parser
                 case_insensitive: ! $caseSensitive,
             ) === 0
         );
+    }
+
+    public function hasNext(string $search, string $stopAt = ''): bool
+    {
+        $position = strpos($this->content, $search, $this->position);
+
+        if ($position === false) {
+            return false;
+        }
+
+        if ($stopAt === '') {
+            return true;
+        }
+
+        $stopPosition = strcspn(
+            $this->content,
+            $stopAt,
+            $this->position,
+        );
+
+        return $position < ($this->position + $stopPosition);
     }
 
     public function consume(int $length = 1): string

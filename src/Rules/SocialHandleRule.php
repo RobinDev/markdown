@@ -2,7 +2,8 @@
 
 namespace Tempest\Markdown\Rules;
 
-use RuntimeException;
+use Tempest\Markdown\Exceptions\SocialHandlePlatformWasUnknown;
+use Tempest\Markdown\Exceptions\SocialHandleWasInvalid;
 use Tempest\Markdown\Parser;
 use Tempest\Markdown\ProvidesFirstChar;
 use Tempest\Markdown\ProvidesStopChar;
@@ -22,12 +23,15 @@ final class SocialHandleRule implements Rule, ProvidesFirstChar, ProvidesStopCha
     public function shouldParse(Parser $parser): bool
     {
         return (
-            $parser->comesNext('{x:', caseSensitive: false)
-            || $parser->comesNext('{gh:', caseSensitive: false)
-            || $parser->comesNext('{bsky:', caseSensitive: false)
-            || $parser->comesNext('{github:', caseSensitive: false)
-            || $parser->comesNext('{twitter:', caseSensitive: false)
-            || $parser->comesNext('{bluesky:', caseSensitive: false)
+            $parser->hasNext('}', "\r\n")
+            && (
+                $parser->comesNext('{x:', caseSensitive: false)
+                || $parser->comesNext('{gh:', caseSensitive: false)
+                || $parser->comesNext('{bsky:', caseSensitive: false)
+                || $parser->comesNext('{github:', caseSensitive: false)
+                || $parser->comesNext('{twitter:', caseSensitive: false)
+                || $parser->comesNext('{bluesky:', caseSensitive: false)
+            )
         );
     }
 
@@ -39,38 +43,45 @@ final class SocialHandleRule implements Rule, ProvidesFirstChar, ProvidesStopCha
         // Consume until the ending bracket ("}").
         $content = $parser->consumeUntilString('}');
 
+        // Consume the closing bracket ("}").
+        $parser->consume();
+
         $matches = [];
 
-        // Match the format: {github:aidan-casey,Label}
+        // Match the format: github:aidan-casey,Label
         // Where "Label" is optional.
+        // This is the slow way to do it, but @brendt and @xHeaven made me do it.
         $matched = preg_match(
-            pattern: '/\A(twitter|x|bluesky|bsky|github|gh):([^,\r\n]+)(?:,([^\r\n]+))?\z/i',
+            pattern: '/\A(?<platform>twitter|x|bluesky|bsky|github|gh):(?<handle>[^,\r\n]+)(?:,(?<content>[^\r\n]*\S[^\r\n]*))?\z/i',
             subject: $content,
             matches: $matches,
+            flags: PREG_UNMATCHED_AS_NULL,
         );
 
         if ($matched !== 1) {
-            throw new RuntimeException("Invalid social handle: {$content}");
+            throw new SocialHandleWasInvalid($parser);
         }
 
-        [, $platform, $handle, $text] = $matches + [null, null, null, null];
-
-        $platform = $platform ? strtolower($platform) : '';
-        $handle ??= '';
+        $platform = strtolower($matches['platform'] ?? '');
+        $handle = $matches['handle'];
+        $content = $matches['content'] ?? '@' . $handle;
 
         return new LinkToken(
-            content: $text ?? '@' . $handle,
-            href: $this->createSocialUrl($platform, $handle),
+            content: $content,
+            href: $this->createSocialUrl($parser, $platform, $handle),
+            parseContent: false,
         );
     }
 
-    private function createSocialUrl(?string $platform, ?string $handle): string
+    private function createSocialUrl(Parser $parser, string $platform, ?string $handle): string
     {
         return match ($platform) {
             'bluesky', 'bsky' => "https://bsky.app/profile/{$handle}",
             'gh', 'github' => "https://github.com/{$handle}",
             'x', 'twitter' => "https://x.com/{$handle}",
-            default => throw new RuntimeException("Unknown platform: {$platform}"),
+            // In theory, we should never reach here given the parsing rules.
+            // But it doesn't hurt anyone either. We may use this later if we allow extensions.
+            default => throw new SocialHandlePlatformWasUnknown($parser, $platform),
         };
     }
 }
