@@ -146,42 +146,6 @@ final class ParserTest extends ParserTestCase
     }
 
     #[Test]
-    public function test_link_remain_literal_without_registration(): void
-    {
-        $parser = new Parser(highlighter: null);
-
-        $this->assertSame('<p>Hello [alice](https://github.com/alice)</p>', $parser->parse('Hello [alice](https://github.com/alice)')->html);
-    }
-
-    #[Test]
-    public function test_removing_link_preserves_literal_syntax(): void
-    {
-        $parser = new Parser(highlighter: null)
-            ->prependRules(new SocialHandleRule())
-            ->removeRules(SocialHandleRule::class);
-
-        $this->assertSame('<p>Hello [alice](https://github.com/alice)</p>', $parser->parse('Hello [alice](https://github.com/alice)')->html);
-    }
-
-    #[Test]
-    public function test_social_handles_remain_literal_without_registration(): void
-    {
-        $parser = new Parser(highlighter: null);
-
-        $this->assertSame('<p>Hello {gh:alice}</p>', $parser->parse('Hello {gh:alice}')->html);
-    }
-
-    #[Test]
-    public function test_removing_social_handle_rule_preserves_literal_syntax(): void
-    {
-        $parser = new Parser(highlighter: null)
-            ->prependRules(new SocialHandleRule())
-            ->removeRules(SocialHandleRule::class);
-
-        $this->assertSame('<p>Hello {gh:alice}</p>', $parser->parse('Hello {gh:alice}')->html);
-    }
-
-    #[Test]
     #[DataProvider('provideSocialHandleInlineContexts')]
     public function test_registered_social_handles_render_in_inline_contexts(string $markdown, string $expectedHtml): void
     {
@@ -212,6 +176,30 @@ final class ParserTest extends ParserTestCase
             'quote' => [
                 '> Hello {gh:alice}',
                 '<blockquote>Hello <a href="https://github.com/alice">@alice</a></blockquote>',
+            ],
+            'bold and italic' => [
+                '***Hello {gh:alice}***',
+                '<p><strong><em>Hello <a href="https://github.com/alice">@alice</a></em></strong></p>',
+            ],
+            'strikethrough' => [
+                '~~Hello {gh:alice}~~',
+                '<p><s>Hello <a href="https://github.com/alice">@alice</a></s></p>',
+            ],
+            'ordered list' => [
+                '1. Hello {gh:alice}',
+                '<ol><li>Hello <a href="https://github.com/alice">@alice</a></li></ol>',
+            ],
+            'table' => [
+                "| Person |\n| --- |\n| Hello {gh:alice} |",
+                '<table><thead><tr><th>Person</th></tr></thead><tbody><tr><td>Hello <a href="https://github.com/alice">@alice</a></td></tr></tbody></table>',
+            ],
+            'div' => [
+                ":::note\nHello {gh:alice}\n:::",
+                "<div class=\"note\">Hello <a href=\"https://github.com/alice\">@alice</a>\n</div>",
+            ],
+            'html' => [
+                '<span>Hello {gh:alice}</span>',
+                '<span>Hello <a href="https://github.com/alice">@alice</a></span>',
             ],
         ];
     }

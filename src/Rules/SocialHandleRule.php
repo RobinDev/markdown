@@ -23,8 +23,7 @@ final class SocialHandleRule implements Rule, ProvidesFirstChar, ProvidesStopCha
     public function shouldParse(Parser $parser): bool
     {
         return (
-            $parser->hasNext('}', "\r\n")
-            && (
+            (
                 $parser->comesNext('{x:', caseSensitive: false)
                 || $parser->comesNext('{gh:', caseSensitive: false)
                 || $parser->comesNext('{bsky:', caseSensitive: false)
@@ -32,6 +31,7 @@ final class SocialHandleRule implements Rule, ProvidesFirstChar, ProvidesStopCha
                 || $parser->comesNext('{twitter:', caseSensitive: false)
                 || $parser->comesNext('{bluesky:', caseSensitive: false)
             )
+            && $parser->hasNext('}', "\r\n")
         );
     }
 

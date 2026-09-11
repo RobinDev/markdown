@@ -302,6 +302,7 @@ final class Parser
             $this->content,
             $stopAt,
             $this->position,
+            $position - $this->position + 1,
         );
 
         return $position < ($this->position + $stopPosition);
