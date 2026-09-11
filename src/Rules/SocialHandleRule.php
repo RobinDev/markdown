@@ -70,7 +70,7 @@ final class SocialHandleRule implements Rule, ProvidesFirstChar, ProvidesStopCha
             'bluesky', 'bsky' => "https://bsky.app/profile/{$handle}",
             'gh', 'github' => "https://github.com/{$handle}",
             'x', 'twitter' => "https://x.com/{$handle}",
-            default => throw new \RuntimeException("Unknown platform: {$platform}"),
+            default => throw new RuntimeException("Unknown platform: {$platform}"),
         };
     }
 }
