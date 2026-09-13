@@ -32,6 +32,11 @@
         "michelf/php-markdown": "^2.0",
         "erusev/parsedown-extra": "^0.9.0"
     },
+    "extra": {
+        "branch-alias": {
+            "dev-pushword-compat": "1.2.x-dev"
+        }
+    },
     "scripts": {
         "bench": "vendor/bin/phpbench run --report=aggregate --php-config='{\"opcache.enable_cli\": 1}'",
         "bench:tempest": "vendor/bin/phpbench run tests/Bench/MarkdownBench.php --filter=benchTempest --report=aggregate",
