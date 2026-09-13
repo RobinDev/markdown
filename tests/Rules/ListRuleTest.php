@@ -27,6 +27,24 @@ class ListRuleTest extends ParserTestCase
     }
 
     #[Test]
+    public function test_asterisk_and_plus_markers(): void
+    {
+        $parser = new Parser(highlighter: null, rules: [new ListRule()]);
+
+        $this->assertSame('<ul><li>one</li><li>two</li></ul>', (string) $parser->parse("* one\n* two"));
+        $this->assertSame('<ul><li>one</li><li>two</li></ul>', (string) $parser->parse("+ one\n+ two"));
+    }
+
+    #[Test]
+    public function test_lazy_continuation(): void
+    {
+        $parser = new Parser(highlighter: null, rules: [new ListRule()]);
+
+        $this->assertSame('<ul><li>one continued</li><li>two</li></ul>', (string) $parser->parse("- one\ncontinued\n- two"));
+        $this->assertSame('<ul><li>one continued</li></ul>', (string) $parser->parse("* one\ncontinued"));
+    }
+
+    #[Test]
     public function test_lex_multiline_items(): void
     {
         $html = (string) new Parser(highlighter: null, rules: [new ListRule()])->parse("- one\n   continued\n   further\n- two\n");
