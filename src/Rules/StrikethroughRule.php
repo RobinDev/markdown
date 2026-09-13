@@ -16,7 +16,13 @@ final class StrikethroughRule implements Rule, ProvidesFirstChar, ProvidesStopCh
 
     public function shouldParse(Parser $parser): bool
     {
-        return $parser->comesNext('~', 1);
+        if (! $parser->comesNext('~', 1)) {
+            return false;
+        }
+
+        $openingLength = strspn($parser->content, '~', $parser->position);
+
+        return strpos($parser->content, '~', $parser->position + $openingLength) !== false;
     }
 
     public function parse(Parser $parser): Token
