@@ -27,7 +27,9 @@ final class FrontMatterRule implements Rule, ProvidesFirstChar
             return false;
         }
 
-        return true;
+        $openingLength = strspn($parser->content, '-', $parser->position);
+
+        return trim(substr($parser->content, $parser->position + $openingLength)) !== '';
     }
 
     public function parse(Parser $parser): ?Token
