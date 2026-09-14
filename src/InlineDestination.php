@@ -10,6 +10,10 @@ namespace Tempest\Markdown;
  */
 final readonly class InlineDestination
 {
+    private const string BARE_STOP_CHARS = '\\()' . Parser::WHITESPACE;
+
+    private const string ANGLE_STOP_CHARS = '\\<>' . Parser::NEW_LINE;
+
     public function __construct(
         public string $destination,
         public ?string $title,
@@ -77,7 +81,14 @@ final readonly class InlineDestination
         $position++;
 
         while ($position < $length) {
-            $character = $content[$position];
+            $offset = strcspn($content, self::ANGLE_STOP_CHARS, $position);
+
+            if ($offset > 0) {
+                $destination .= substr($content, $position, $offset);
+                $position += $offset;
+            }
+
+            $character = $content[$position] ?? null;
 
             if ($character === '\\' && isset($content[$position + 1])) {
                 $destination .= $content[$position + 1];
@@ -92,16 +103,7 @@ final readonly class InlineDestination
 
             // An unescaped `<` or a line ending closes nothing and makes the
             // whole construct literal text.
-            if (
-                $character === '<'
-                || $character === "\n"
-                || $character === "\r"
-            ) {
-                return null;
-            }
-
-            $destination .= $character;
-            $position++;
+            return null;
         }
 
         return null;
@@ -117,7 +119,16 @@ final readonly class InlineDestination
         $depth = 0;
 
         while ($position < $length) {
-            $character = $content[$position];
+            // Bulk-skip to the next character that needs attention rather
+            // than walking the destination one character at a time.
+            $offset = strcspn($content, self::BARE_STOP_CHARS, $position);
+
+            if ($offset > 0) {
+                $destination .= substr($content, $position, $offset);
+                $position += $offset;
+            }
+
+            $character = $content[$position] ?? null;
 
             if ($character === '\\' && isset($content[$position + 1])) {
                 $destination .= $content[$position + 1];
@@ -134,12 +145,8 @@ final readonly class InlineDestination
                 }
 
                 $depth--;
-            } elseif (
-                $character === ' '
-                || $character === "\t"
-                || $character === "\n"
-                || $character === "\r"
-            ) {
+            } elseif ($character !== '\\') {
+                // Whitespace, or the end of the content.
                 break;
             }
 
@@ -171,11 +178,19 @@ final readonly class InlineDestination
         }
 
         $length = strlen($content);
+        $stopChars = '\\' . $closing;
         $title = '';
         $position++;
 
         while ($position < $length) {
-            $character = $content[$position];
+            $offset = strcspn($content, $stopChars, $position);
+
+            if ($offset > 0) {
+                $title .= substr($content, $position, $offset);
+                $position += $offset;
+            }
+
+            $character = $content[$position] ?? null;
 
             if ($character === '\\' && isset($content[$position + 1])) {
                 $title .= $content[$position + 1];
@@ -188,8 +203,7 @@ final readonly class InlineDestination
                 return [self::decodeEntities($title), $position + 1];
             }
 
-            $title .= $character;
-            $position++;
+            break;
         }
 
         return null;
