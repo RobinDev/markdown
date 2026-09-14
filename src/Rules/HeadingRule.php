@@ -28,7 +28,7 @@ final class HeadingRule implements Rule, ProvidesFirstChar
         $idSeparator = strpos(
             haystack: $buffer,
             needle: str_repeat('#', $level),
-            offset: $level,
+            offset: 0,
         );
 
         if ($idSeparator !== false) {
