@@ -20,27 +20,31 @@ final readonly class ParagraphRule implements Rule
         $content = '';
 
         while ($parser->current !== null) {
-            $content .= $parser->consumeUntil(Parser::NEW_LINE);
+            $line = $parser->consumeUntil(Parser::NEW_LINE);
 
-            if ($parser->current === null) {
-                break;
+            // A blank line ends the paragraph and stays available to the newline rule.
+            $endsParagraph =
+                $parser->position >= $parser->length
+                || $parser->comesNext("\n\n", 2)
+                || $parser->comesNext("\r\n\r\n", 4)
+                || $parser->comesNext("\n\r\n", 3)
+                || $parser->comesNext("\r\n\n", 3);
+
+            $newline = $endsParagraph ? '' : $parser->consumeWhile(Parser::NEW_LINE);
+
+            $matches = [];
+            if ($content !== '' && preg_match('/\A {0,3}(=+|-+)[ \t]*\z/', $line, $matches)) {
+                $heading = trim($content);
+                $id = mb_strtolower($heading) |> (fn (string $value) => trim(preg_replace('/[^\p{L}\p{N}]+/u', '-', $value) ?? '', '-'));
+
+                return new HeadingToken($heading, $matches[1][0] === '=' ? 1 : 2, $id);
             }
 
-            // A blank line (two consecutive newlines) ends the paragraph
-            if ($parser->comesNext("\n\n", 2) || $parser->comesNext("\r\n\r\n", 4) || $parser->comesNext("\n\r\n", 3) || $parser->comesNext("\r\n\n", 3)) {
+            $content .= $line . $newline;
+
+            if ($endsParagraph) {
                 break;
             }
-
-            // Single newline — consume it and continue to the next line
-            $content .= $parser->consumeWhile(Parser::NEW_LINE);
-        }
-
-        $trimmed = rtrim($content, "\r\n");
-        if (preg_match('/\A(.+)\r?\n {0,3}(=+|-+)[ \t]*\z/s', $trimmed, $matches)) {
-            $heading = trim($matches[1]);
-            $id = mb_strtolower($heading) |> (fn (string $value) => trim(preg_replace('/[^\p{L}\p{N}]+/u', '-', $value) ?? '', '-'));
-
-            return new HeadingToken($heading, $matches[2][0] === '=' ? 1 : 2, $id);
         }
 
         return new ParagraphToken($content);
