@@ -26,6 +26,14 @@ class HeadingRuleTest extends ParserTestCase
     }
 
     #[Test]
+    public function test_heading_text_shorter_than_level(): void
+    {
+        $html = (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse('#### Fin');
+
+        $this->assertSame('<h4 id="fin">Fin</h4>', $html);
+    }
+
+    #[Test]
     public function test_lex_with_heading_id(): void
     {
         $html = (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse('### Hello ### hello-world');

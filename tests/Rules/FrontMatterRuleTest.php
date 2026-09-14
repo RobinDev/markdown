@@ -6,14 +6,35 @@ use PHPUnit\Framework\Attributes\Test;
 use Tempest\Markdown\Exceptions\FrontMatterCouldNotBeParsed;
 use Tempest\Markdown\Exceptions\FrontMatterShouldBeAnArray;
 use Tempest\Markdown\Exceptions\FrontMatterWasNotProperlyClosed;
+use Tempest\Markdown\Markdown;
 use Tempest\Markdown\Parser;
 use Tempest\Markdown\Rules\FrontMatterRule;
 use Tempest\Markdown\Rules\NewLineRule;
 use Tempest\Markdown\Rules\ParagraphRule;
+use Tempest\Markdown\Rules\ThinRulerRule;
 use Tempest\Markdown\Tests\ParserTestCase;
 
 final class FrontMatterRuleTest extends ParserTestCase
 {
+    #[Test]
+    public function standalone_delimiter_is_a_thematic_break(): void
+    {
+        $parser = new Parser(highlighter: null, rules: [new FrontMatterRule(), new ThinRulerRule(), new NewLineRule()]);
+
+        $this->assertSame('<hr/>', $parser->parse('---')->html);
+        $this->assertSame("<hr/>\n", $parser->parse("---\n")->html);
+        $this->assertSame('<hr/>', $parser->parse('-----')->html);
+        $this->assertSame('<hr/>', new Markdown(highlighter: null)->parse('---')->html);
+    }
+
+    #[Test]
+    public function unclosed_frontmatter_with_content_still_throws(): void
+    {
+        $this->expectException(FrontMatterWasNotProperlyClosed::class);
+
+        new Markdown(highlighter: null)->parse("---\ntitle: Hello");
+    }
+
     #[Test]
     public function test_lex(): void
     {

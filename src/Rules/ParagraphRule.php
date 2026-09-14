@@ -5,6 +5,7 @@ namespace Tempest\Markdown\Rules;
 use Tempest\Markdown\Parser;
 use Tempest\Markdown\Rule;
 use Tempest\Markdown\Token;
+use Tempest\Markdown\Tokens\HeadingToken;
 use Tempest\Markdown\Tokens\ParagraphToken;
 
 final readonly class ParagraphRule implements Rule
@@ -32,6 +33,14 @@ final readonly class ParagraphRule implements Rule
 
             // Single newline — consume it and continue to the next line
             $content .= $parser->consumeWhile(Parser::NEW_LINE);
+        }
+
+        $trimmed = rtrim($content, "\r\n");
+        if (preg_match('/\A(.+)\r?\n {0,3}(=+|-+)[ \t]*\z/s', $trimmed, $matches)) {
+            $heading = trim($matches[1]);
+            $id = mb_strtolower($heading) |> (fn (string $value) => trim(preg_replace('/[^\p{L}\p{N}]+/u', '-', $value) ?? '', '-'));
+
+            return new HeadingToken($heading, $matches[2][0] === '=' ? 1 : 2, $id);
         }
 
         return new ParagraphToken($content);
