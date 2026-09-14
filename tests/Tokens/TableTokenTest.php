@@ -100,15 +100,43 @@ class TableTokenTest extends ParserTestCase
 
         $this->assertEquals(
             '<table><tbody><tr><td><strong><em>text</em></strong></td></tr></tbody></table>',
-            new TableToken([new TableRow(['***text***'], isHeader: false)])->parse($parser),
+            new TableToken([new TableRow(
+                ['***text***'],
+                isHeader: false,
+            )])->parse($parser),
         );
-        $this->assertEquals('<table><tbody><tr><td><strong>text</strong></td></tr></tbody></table>', new TableToken([new TableRow(['**text**'], isHeader: false)])->parse($parser));
-        $this->assertEquals('<table><tbody><tr><td><em>text</em></td></tr></tbody></table>', new TableToken([new TableRow(['*text*'], isHeader: false)])->parse($parser));
+        $this->assertEquals(
+            '<table><tbody><tr><td><strong>text</strong></td></tr></tbody></table>',
+            new TableToken([new TableRow(
+                ['**text**'],
+                isHeader: false,
+            )])->parse($parser),
+        );
+        $this->assertEquals(
+            '<table><tbody><tr><td><em>text</em></td></tr></tbody></table>',
+            new TableToken([new TableRow(['*text*'], isHeader: false)])->parse(
+                $parser,
+            ),
+        );
         $this->assertEquals(
             '<table><tbody><tr><td><strong><em>text</em></strong></td></tr></tbody></table>',
-            new TableToken([new TableRow(['___text___'], isHeader: false)])->parse($parser),
+            new TableToken([new TableRow(
+                ['___text___'],
+                isHeader: false,
+            )])->parse($parser),
         );
-        $this->assertEquals('<table><tbody><tr><td><strong>text</strong></td></tr></tbody></table>', new TableToken([new TableRow(['__text__'], isHeader: false)])->parse($parser));
-        $this->assertEquals('<table><tbody><tr><td><em>text</em></td></tr></tbody></table>', new TableToken([new TableRow(['_text_'], isHeader: false)])->parse($parser));
+        $this->assertEquals(
+            '<table><tbody><tr><td><strong>text</strong></td></tr></tbody></table>',
+            new TableToken([new TableRow(
+                ['__text__'],
+                isHeader: false,
+            )])->parse($parser),
+        );
+        $this->assertEquals(
+            '<table><tbody><tr><td><em>text</em></td></tr></tbody></table>',
+            new TableToken([new TableRow(['_text_'], isHeader: false)])->parse(
+                $parser,
+            ),
+        );
     }
 }

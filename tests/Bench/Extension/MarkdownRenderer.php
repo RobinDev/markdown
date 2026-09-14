@@ -15,9 +15,22 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 readonly class MarkdownRenderer implements RendererInterface
 {
-    private const array COMPACT_HEADERS = ['Benchmark', 'Set', 'Mem. Peak', 'Time', 'Variability'];
+    private const array COMPACT_HEADERS = [
+        'Benchmark',
+        'Set',
+        'Mem. Peak',
+        'Time',
+        'Variability',
+    ];
 
-    private const array COMPACT_SOURCE_COLUMNS = ['benchmark', 'subject', 'set', 'mem_peak', 'mode', 'rstdev'];
+    private const array COMPACT_SOURCE_COLUMNS = [
+        'benchmark',
+        'subject',
+        'set',
+        'mem_peak',
+        'mode',
+        'rstdev',
+    ];
 
     private const int COMPACT_TIME_COLUMN_INDEX = 3;
 
@@ -28,7 +41,10 @@ readonly class MarkdownRenderer implements RendererInterface
 
     public function render(Reports $report, Config $config): void
     {
-        $content = $this->renderContent($report, $this->resolveOutlierMinDiff($config));
+        $content = $this->renderContent(
+            $report,
+            $this->resolveOutlierMinDiff($config),
+        );
         $file = $config['file'];
 
         if ($file === null) {
@@ -38,7 +54,9 @@ readonly class MarkdownRenderer implements RendererInterface
         }
 
         if (! is_string($file)) {
-            throw new RuntimeException('The markdown renderer file option must be a string or null.');
+            throw new RuntimeException(
+                'The markdown renderer file option must be a string or null.',
+            );
         }
 
         $this->writeFile($file, $content);
@@ -55,8 +73,10 @@ readonly class MarkdownRenderer implements RendererInterface
         $options->setAllowedTypes('outlier_min_diff', ['null', 'float', 'int']);
     }
 
-    private function renderContent(Reports $reports, ?float $outlierMinDiff): string
-    {
+    private function renderContent(
+        Reports $reports,
+        ?float $outlierMinDiff,
+    ): string {
         /** @var list<string> $lines */
         $lines = [];
 
@@ -85,12 +105,30 @@ readonly class MarkdownRenderer implements RendererInterface
             return $lines;
         }
 
-        $rows = array_values(array_map($this->renderTableRow(...), $table->rows()));
-        [$columns, $rows, $isCompactTable] = $this->compactAggregateReportTable($columns, $rows);
-        $rows = $this->filterOutlierRows($rows, $outlierMinDiff, $isCompactTable);
+        $rows = array_values(array_map(
+            $this->renderTableRow(...),
+            $table->rows(),
+        ));
+        [$columns, $rows, $isCompactTable] = $this->compactAggregateReportTable(
+            $columns,
+            $rows,
+        );
+        $rows = $this->filterOutlierRows(
+            $rows,
+            $outlierMinDiff,
+            $isCompactTable,
+        );
 
-        if ($rows === [] && $isCompactTable && $outlierMinDiff !== null && $outlierMinDiff > 0.0) {
-            $lines[] = sprintf('_No benchmark changes above ±%s%%._', $this->formatPercentage($outlierMinDiff));
+        if (
+            $rows === []
+            && $isCompactTable
+            && $outlierMinDiff !== null
+            && $outlierMinDiff > 0.0
+        ) {
+            $lines[] = sprintf(
+                '_No benchmark changes above ±%s%%._',
+                $this->formatPercentage($outlierMinDiff),
+            );
             $lines[] = '';
 
             return $lines;
@@ -118,7 +156,10 @@ readonly class MarkdownRenderer implements RendererInterface
     private function renderSeparatorRow(array $columns): string
     {
         return $this->renderRow(array_map(
-            fn (string $column): string => str_repeat('-', max(3, mb_strlen($column))),
+            fn (string $column): string => str_repeat('-', max(
+                3,
+                mb_strlen($column),
+            )),
             $columns,
         ));
     }
@@ -126,7 +167,10 @@ readonly class MarkdownRenderer implements RendererInterface
     /** @return list<string> */
     private function renderTableRow(TableRow $row): array
     {
-        return array_values(array_map($this->formatCell(...), iterator_to_array($row)));
+        return array_values(array_map(
+            $this->formatCell(...),
+            iterator_to_array($row),
+        ));
     }
 
     /**
@@ -134,8 +178,10 @@ readonly class MarkdownRenderer implements RendererInterface
      * @param list<list<string>> $rows
      * @return array{0: list<string>, 1: list<list<string>>, 2: bool}
      */
-    private function compactAggregateReportTable(array $columns, array $rows): array
-    {
+    private function compactAggregateReportTable(
+        array $columns,
+        array $rows,
+    ): array {
         $columnIndexes = $this->resolveCompactSourceColumnIndexes($columns);
 
         if ($columnIndexes === null) {
@@ -146,7 +192,11 @@ readonly class MarkdownRenderer implements RendererInterface
             $set = trim($row[$columnIndexes['set']]);
 
             return [
-                sprintf('%s(%s)', $row[$columnIndexes['benchmark']], $row[$columnIndexes['subject']]),
+                sprintf(
+                    '%s(%s)',
+                    $row[$columnIndexes['benchmark']],
+                    $row[$columnIndexes['subject']],
+                ),
                 $set === '' ? '-' : $set,
                 $row[$columnIndexes['mem_peak']],
                 $row[$columnIndexes['mode']],
@@ -161,14 +211,25 @@ readonly class MarkdownRenderer implements RendererInterface
      * @param list<list<string>> $rows
      * @return list<list<string>>
      */
-    private function filterOutlierRows(array $rows, ?float $outlierMinDiff, bool $isCompactTable): array
-    {
-        if (! $isCompactTable || $outlierMinDiff === null || $outlierMinDiff <= 0.0) {
+    private function filterOutlierRows(
+        array $rows,
+        ?float $outlierMinDiff,
+        bool $isCompactTable,
+    ): array {
+        if (
+            ! $isCompactTable
+            || $outlierMinDiff === null
+            || $outlierMinDiff <= 0.0
+        ) {
             return $rows;
         }
 
-        return array_values(array_filter($rows, function (array $row) use ($outlierMinDiff): bool {
-            $diff = $this->extractTrailingPercentage($row[self::COMPACT_TIME_COLUMN_INDEX]);
+        return array_values(array_filter($rows, function (array $row) use (
+            $outlierMinDiff,
+        ): bool {
+            $diff = $this->extractTrailingPercentage(
+                $row[self::COMPACT_TIME_COLUMN_INDEX],
+            );
 
             if ($diff === null) {
                 return true;
@@ -206,7 +267,9 @@ readonly class MarkdownRenderer implements RendererInterface
         }
 
         if (! is_float($value) && ! is_int($value)) {
-            throw new RuntimeException('The markdown renderer outlier_min_diff option must be a float, int, or null.');
+            throw new RuntimeException(
+                'The markdown renderer outlier_min_diff option must be a float, int, or null.',
+            );
         }
 
         return (float) $value;
@@ -225,7 +288,10 @@ readonly class MarkdownRenderer implements RendererInterface
     {
         $columnIndexes = array_flip($columns);
 
-        if (array_any(self::COMPACT_SOURCE_COLUMNS, fn ($column) => ! array_key_exists($column, $columnIndexes))) {
+        if (array_any(
+            self::COMPACT_SOURCE_COLUMNS,
+            fn ($column) => ! array_key_exists($column, $columnIndexes),
+        )) {
             return null;
         }
 
@@ -249,7 +315,10 @@ readonly class MarkdownRenderer implements RendererInterface
         $this->createDirectory(dirname($file));
 
         if (file_put_contents($file, $content) === false) {
-            throw new RuntimeException(sprintf('Could not write to file "%s"', $file));
+            throw new RuntimeException(sprintf(
+                'Could not write to file "%s"',
+                $file,
+            ));
         }
 
         $this->output->writeln("Written markdown report to: {$file}");
@@ -262,7 +331,10 @@ readonly class MarkdownRenderer implements RendererInterface
         }
 
         if (! mkdir($directory, 0o777, true) && ! is_dir($directory)) {
-            throw new RuntimeException(sprintf('Could not create directory "%s"', $directory));
+            throw new RuntimeException(sprintf(
+                'Could not create directory "%s"',
+                $directory,
+            ));
         }
     }
 }

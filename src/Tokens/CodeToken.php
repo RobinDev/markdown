@@ -23,7 +23,11 @@ final readonly class CodeToken implements Token
             $content = htmlspecialchars($this->content, ENT_QUOTES);
         }
 
-        $class = $language ? ' class="language-' . htmlspecialchars($language, ENT_QUOTES) . '"' : '';
+        $class = $language
+            ? ' class="language-'
+            . htmlspecialchars($language, ENT_QUOTES)
+            . '"'
+            : '';
 
         return "<code{$class}>{$content}</code>";
     }

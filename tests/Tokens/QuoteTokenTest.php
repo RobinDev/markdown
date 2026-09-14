@@ -14,7 +14,10 @@ class QuoteTokenTest extends ParserTestCase
     {
         $token = new QuoteToken('Hello');
 
-        $this->assertEquals('<blockquote>Hello</blockquote>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<blockquote>Hello</blockquote>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -57,7 +60,10 @@ class QuoteTokenTest extends ParserTestCase
     {
         $token = new QuoteToken('Hello **world**');
 
-        $this->assertEquals('<blockquote>Hello <strong>world</strong></blockquote>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<blockquote>Hello <strong>world</strong></blockquote>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -65,7 +71,10 @@ class QuoteTokenTest extends ParserTestCase
     {
         $token = new QuoteToken('Hello _world_');
 
-        $this->assertEquals('<blockquote>Hello <em>world</em></blockquote>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<blockquote>Hello <em>world</em></blockquote>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -73,7 +82,10 @@ class QuoteTokenTest extends ParserTestCase
     {
         $token = new QuoteToken('Hello [world](#)');
 
-        $this->assertEquals('<blockquote>Hello <a href="#">world</a></blockquote>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<blockquote>Hello <a href="#">world</a></blockquote>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -81,7 +93,10 @@ class QuoteTokenTest extends ParserTestCase
     {
         $token = new QuoteToken('Hello ![world](#)');
 
-        $this->assertEquals('<blockquote>Hello <img src="#" alt="world"></blockquote>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<blockquote>Hello <img src="#" alt="world"></blockquote>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -89,7 +104,10 @@ class QuoteTokenTest extends ParserTestCase
     {
         $token = new QuoteToken('Hello ***world***');
 
-        $this->assertEquals('<blockquote>Hello <strong><em>world</em></strong></blockquote>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<blockquote>Hello <strong><em>world</em></strong></blockquote>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -97,11 +115,29 @@ class QuoteTokenTest extends ParserTestCase
     {
         $parser = new Parser();
 
-        $this->assertEquals('<blockquote><strong><em>text</em></strong></blockquote>', new QuoteToken('***text***')->parse($parser));
-        $this->assertEquals('<blockquote><strong>text</strong></blockquote>', new QuoteToken('**text**')->parse($parser));
-        $this->assertEquals('<blockquote><em>text</em></blockquote>', new QuoteToken('*text*')->parse($parser));
-        $this->assertEquals('<blockquote><strong><em>text</em></strong></blockquote>', new QuoteToken('___text___')->parse($parser));
-        $this->assertEquals('<blockquote><strong>text</strong></blockquote>', new QuoteToken('__text__')->parse($parser));
-        $this->assertEquals('<blockquote><em>text</em></blockquote>', new QuoteToken('_text_')->parse($parser));
+        $this->assertEquals(
+            '<blockquote><strong><em>text</em></strong></blockquote>',
+            new QuoteToken('***text***')->parse($parser),
+        );
+        $this->assertEquals(
+            '<blockquote><strong>text</strong></blockquote>',
+            new QuoteToken('**text**')->parse($parser),
+        );
+        $this->assertEquals(
+            '<blockquote><em>text</em></blockquote>',
+            new QuoteToken('*text*')->parse($parser),
+        );
+        $this->assertEquals(
+            '<blockquote><strong><em>text</em></strong></blockquote>',
+            new QuoteToken('___text___')->parse($parser),
+        );
+        $this->assertEquals(
+            '<blockquote><strong>text</strong></blockquote>',
+            new QuoteToken('__text__')->parse($parser),
+        );
+        $this->assertEquals(
+            '<blockquote><em>text</em></blockquote>',
+            new QuoteToken('_text_')->parse($parser),
+        );
     }
 }

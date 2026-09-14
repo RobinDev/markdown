@@ -24,12 +24,19 @@ final readonly class PreToken implements Token
             $content = htmlspecialchars($this->content, ENT_QUOTES);
         }
 
-        $class = $language ? ' class="language-' . htmlspecialchars($language, ENT_QUOTES) . '"' : '';
+        $class = $language
+            ? ' class="language-'
+            . htmlspecialchars($language, ENT_QUOTES)
+            . '"'
+            : '';
 
         $html = "<pre{$class}>{$content}</pre>";
 
         if ($this->title) {
-            $html = '<div class="code-title">' . htmlspecialchars($this->title, ENT_QUOTES) . "</div>{$html}";
+            $html =
+                '<div class="code-title">'
+                . htmlspecialchars($this->title, ENT_QUOTES)
+                . "</div>{$html}";
         }
 
         return $html;

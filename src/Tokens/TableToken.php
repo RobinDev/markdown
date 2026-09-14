@@ -33,8 +33,14 @@ final class TableToken implements Token
             new TextRule(),
         ]);
 
-        $headerRows = array_values(array_filter($this->rows, fn (TableRow $row) => $row->isHeader));
-        $dataRows = array_values(array_filter($this->rows, fn (TableRow $row) => ! $row->isHeader));
+        $headerRows = array_values(array_filter(
+            $this->rows,
+            fn (TableRow $row) => $row->isHeader,
+        ));
+        $dataRows = array_values(array_filter(
+            $this->rows,
+            fn (TableRow $row) => ! $row->isHeader,
+        ));
 
         $table = '<table>';
 

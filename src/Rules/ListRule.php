@@ -30,9 +30,14 @@ final class ListRule implements Rule, ProvidesFirstChar
             $indent = strspn($parser->content, ' ', $parser->position);
 
             if ($indent >= 2) {
-                while ($parser->current !== null && strspn($parser->content, ' ', $parser->position) >= $indent) {
+                while (
+                    $parser->current !== null
+                    && strspn($parser->content, ' ', $parser->position)
+                        >= $indent
+                ) {
                     $parser->consume($indent);
-                    $childContent .= $parser->consumeUntil(Parser::NEW_LINE) . PHP_EOL;
+                    $childContent .=
+                        $parser->consumeUntil(Parser::NEW_LINE) . PHP_EOL;
                     $newlines = $parser->consumeWhile(Parser::NEW_LINE);
                 }
 
@@ -40,7 +45,9 @@ final class ListRule implements Rule, ProvidesFirstChar
                     break;
                 }
 
-                $content .= ' ' . trim(preg_replace('/\s+/u', ' ', $childContent) ?? '');
+                $content .=
+                    ' '
+                    . trim(preg_replace('/\s+/u', ' ', $childContent) ?? '');
                 $childContent = '';
                 continue;
             }
@@ -49,8 +56,18 @@ final class ListRule implements Rule, ProvidesFirstChar
                 break;
             }
 
-            $nextLine = substr($parser->content, $parser->position, strcspn($parser->content, Parser::NEW_LINE, $parser->position));
-            if (trim($nextLine) === '' || preg_match('/^(?:[-*+] |[0-9]+[.)] |#{1,6}[ \t]|>|`{3}|~{3}|-{3}|={3}|<|:{3})/', $nextLine)) {
+            $nextLine = substr(
+                $parser->content,
+                $parser->position,
+                strcspn($parser->content, Parser::NEW_LINE, $parser->position),
+            );
+            if (
+                trim($nextLine) === ''
+                || preg_match(
+                    '/^(?:[-*+] |[0-9]+[.)] |#{1,6}[ \t]|>|`{3}|~{3}|-{3}|={3}|<|:{3})/',
+                    $nextLine,
+                )
+            ) {
                 break;
             }
 
@@ -58,7 +75,9 @@ final class ListRule implements Rule, ProvidesFirstChar
             $newlines = $parser->consumeWhile(Parser::NEW_LINE);
         }
 
-        $children = $childContent === '' ? null : $parser->withRules(new ListRule())->lex($childContent)[0];
+        $children = $childContent === ''
+            ? null
+            : $parser->withRules(new ListRule())->lex($childContent)[0];
 
         $item = new ListItem($content, $children);
 

@@ -88,7 +88,10 @@ class ParagraphTokenTest extends ParserTestCase
 
         $html = $token->parse(new Parser());
 
-        $this->assertEquals("<p>Hello, \n<pre class=\"language-txt\">world</pre></p>", $html);
+        $this->assertEquals(
+            "<p>Hello, \n<pre class=\"language-txt\">world</pre></p>",
+            $html,
+        );
     }
 
     #[Test]
@@ -98,7 +101,10 @@ class ParagraphTokenTest extends ParserTestCase
 
         $html = $token->parse(new Parser());
 
-        $this->assertEquals("<p>Hello, \n<div class=\"alert\">world\n</div></p>", $html);
+        $this->assertEquals(
+            "<p>Hello, \n<div class=\"alert\">world\n</div></p>",
+            $html,
+        );
     }
 
     #[Test]
@@ -118,11 +124,29 @@ class ParagraphTokenTest extends ParserTestCase
     {
         $parser = new Parser();
 
-        $this->assertEquals('<p><strong><em>text</em></strong></p>', new ParagraphToken('***text***')->parse($parser));
-        $this->assertEquals('<p><strong>text</strong></p>', new ParagraphToken('**text**')->parse($parser));
-        $this->assertEquals('<p><em>text</em></p>', new ParagraphToken('*text*')->parse($parser));
-        $this->assertEquals('<p><strong><em>text</em></strong></p>', new ParagraphToken('___text___')->parse($parser));
-        $this->assertEquals('<p><strong>text</strong></p>', new ParagraphToken('__text__')->parse($parser));
-        $this->assertEquals('<p><em>text</em></p>', new ParagraphToken('_text_')->parse($parser));
+        $this->assertEquals(
+            '<p><strong><em>text</em></strong></p>',
+            new ParagraphToken('***text***')->parse($parser),
+        );
+        $this->assertEquals(
+            '<p><strong>text</strong></p>',
+            new ParagraphToken('**text**')->parse($parser),
+        );
+        $this->assertEquals(
+            '<p><em>text</em></p>',
+            new ParagraphToken('*text*')->parse($parser),
+        );
+        $this->assertEquals(
+            '<p><strong><em>text</em></strong></p>',
+            new ParagraphToken('___text___')->parse($parser),
+        );
+        $this->assertEquals(
+            '<p><strong>text</strong></p>',
+            new ParagraphToken('__text__')->parse($parser),
+        );
+        $this->assertEquals(
+            '<p><em>text</em></p>',
+            new ParagraphToken('_text_')->parse($parser),
+        );
     }
 }

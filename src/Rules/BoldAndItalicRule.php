@@ -9,14 +9,20 @@ use Tempest\Markdown\Rule;
 use Tempest\Markdown\Token;
 use Tempest\Markdown\Tokens\BoldAndItalicToken;
 
-final class BoldAndItalicRule implements Rule, ProvidesFirstChar, ProvidesStopChar
+final class BoldAndItalicRule implements
+    Rule,
+    ProvidesFirstChar,
+    ProvidesStopChar
 {
     private(set) string $firstChar = '*_';
     private(set) string $stopChar = '_*';
 
     public function shouldParse(Parser $parser): bool
     {
-        return $parser->comesNext('***', length: 3) || $parser->comesNext('___', length: 3);
+        return (
+            $parser->comesNext('***', length: 3)
+            || $parser->comesNext('___', length: 3)
+        );
     }
 
     public function parse(Parser $parser): Token

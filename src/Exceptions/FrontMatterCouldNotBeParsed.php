@@ -8,7 +8,8 @@ use Tempest\Markdown\MarkdownException;
 use Tempest\Markdown\Parser;
 use Tempest\Markdown\RendersSnippet;
 
-final class FrontMatterCouldNotBeParsed extends Exception implements MarkdownException
+final class FrontMatterCouldNotBeParsed extends Exception implements
+    MarkdownException
 {
     use RendersSnippet;
 

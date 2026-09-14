@@ -15,7 +15,10 @@ class HtmlRuleTest extends ParserTestCase
     #[Test]
     public function test_lex(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new HtmlRule()])->parse('<p>Hi</p>');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HtmlRule()])->parse(
+                '<p>Hi</p>',
+            );
 
         $this->assertSame('<p>Hi</p>', $html);
     }
@@ -23,7 +26,10 @@ class HtmlRuleTest extends ParserTestCase
     #[Test]
     public function test_lex_nested(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new HtmlRule()])->parse('<div><div>Hi</div></div>');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HtmlRule()])->parse(
+                '<div><div>Hi</div></div>',
+            );
 
         $this->assertSame('<div><div>Hi</div></div>', $html);
     }
@@ -41,7 +47,11 @@ class HtmlRuleTest extends ParserTestCase
         World
         HTML;
 
-        $html = (string) new Parser(highlighter: null, rules: [new NewLineRule(), new HtmlRule(), new ParagraphRule()])->parse($input);
+        $html = (string) new Parser(highlighter: null, rules: [
+            new NewLineRule(),
+            new HtmlRule(),
+            new ParagraphRule(),
+        ])->parse($input);
 
         $this->assertStringContainsString('<p>Hello</p>', $html);
         $this->assertStringContainsString("<p>\nHi\n</p>", $html);
@@ -53,7 +63,10 @@ class HtmlRuleTest extends ParserTestCase
     {
         $input = '<area><base><br><col><embed><hr><img><input><link><meta><param><source><track><wbr>Hello';
 
-        $html = (string) new Parser(highlighter: null, rules: [new HtmlRule(), new TextRule()])->parse($input);
+        $html = (string) new Parser(highlighter: null, rules: [
+            new HtmlRule(),
+            new TextRule(),
+        ])->parse($input);
 
         $this->assertSame($input, $html);
     }
@@ -61,7 +74,11 @@ class HtmlRuleTest extends ParserTestCase
     #[Test]
     public function test_void_tags_are_case_insensitive(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new HtmlRule(), new NewLineRule(), new ParagraphRule()])->parse("<BR>\nHello");
+        $html = (string) new Parser(highlighter: null, rules: [
+            new HtmlRule(),
+            new NewLineRule(),
+            new ParagraphRule(),
+        ])->parse("<BR>\nHello");
 
         $this->assertSame("<BR>\n<p>Hello</p>", $html);
     }

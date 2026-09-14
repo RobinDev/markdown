@@ -22,7 +22,10 @@ class StrikethroughTokenTest extends ParserTestCase
     {
         $token = new StrikethroughToken('hello _world_');
 
-        $this->assertEquals('<s>hello <em>world</em></s>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<s>hello <em>world</em></s>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -30,7 +33,10 @@ class StrikethroughTokenTest extends ParserTestCase
     {
         $token = new StrikethroughToken('hello **world**');
 
-        $this->assertEquals('<s>hello <strong>world</strong></s>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<s>hello <strong>world</strong></s>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -38,7 +44,10 @@ class StrikethroughTokenTest extends ParserTestCase
     {
         $token = new StrikethroughToken('hello [world](#)');
 
-        $this->assertEquals('<s>hello <a href="#">world</a></s>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<s>hello <a href="#">world</a></s>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -46,7 +55,10 @@ class StrikethroughTokenTest extends ParserTestCase
     {
         $token = new StrikethroughToken('hello ***world***');
 
-        $this->assertEquals('<s>hello <strong><em>world</em></strong></s>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<s>hello <strong><em>world</em></strong></s>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -54,11 +66,29 @@ class StrikethroughTokenTest extends ParserTestCase
     {
         $parser = new Parser();
 
-        $this->assertEquals('<s><strong><em>text</em></strong></s>', new StrikethroughToken('***text***')->parse($parser));
-        $this->assertEquals('<s><strong>text</strong></s>', new StrikethroughToken('**text**')->parse($parser));
-        $this->assertEquals('<s><em>text</em></s>', new StrikethroughToken('*text*')->parse($parser));
-        $this->assertEquals('<s><strong><em>text</em></strong></s>', new StrikethroughToken('___text___')->parse($parser));
-        $this->assertEquals('<s><strong>text</strong></s>', new StrikethroughToken('__text__')->parse($parser));
-        $this->assertEquals('<s><em>text</em></s>', new StrikethroughToken('_text_')->parse($parser));
+        $this->assertEquals(
+            '<s><strong><em>text</em></strong></s>',
+            new StrikethroughToken('***text***')->parse($parser),
+        );
+        $this->assertEquals(
+            '<s><strong>text</strong></s>',
+            new StrikethroughToken('**text**')->parse($parser),
+        );
+        $this->assertEquals(
+            '<s><em>text</em></s>',
+            new StrikethroughToken('*text*')->parse($parser),
+        );
+        $this->assertEquals(
+            '<s><strong><em>text</em></strong></s>',
+            new StrikethroughToken('___text___')->parse($parser),
+        );
+        $this->assertEquals(
+            '<s><strong>text</strong></s>',
+            new StrikethroughToken('__text__')->parse($parser),
+        );
+        $this->assertEquals(
+            '<s><em>text</em></s>',
+            new StrikethroughToken('_text_')->parse($parser),
+        );
     }
 }

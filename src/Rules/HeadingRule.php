@@ -33,11 +33,18 @@ final class HeadingRule implements Rule, ProvidesFirstChar
 
         if ($idSeparator !== false) {
             // An id is specified
-            $id = substr(string: $buffer, offset: $idSeparator + $level) |> trim(...);
-            $buffer = substr(string: $buffer, offset: 0, length: $idSeparator) |> trim(...);
+            $id = substr(string: $buffer, offset: $idSeparator + $level)
+                |> trim(...);
+            $buffer = substr(string: $buffer, offset: 0, length: $idSeparator)
+                |> trim(...);
         } else {
             // No id is specified, we'll slug the heading
-            $id = $buffer |> mb_strtolower(...) |> (fn (string $x) => trim(preg_replace('/[^\p{L}\p{N}]+/u', '-', $x) ?? '', '-'));
+            $id = $buffer
+                |> mb_strtolower(...)
+                |> (fn (string $x) => trim(
+                    preg_replace('/[^\p{L}\p{N}]+/u', '-', $x) ?? '',
+                    '-',
+                ));
         }
 
         return new HeadingToken(

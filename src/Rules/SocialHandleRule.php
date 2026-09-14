@@ -15,7 +15,10 @@ use Tempest\Markdown\Tokens\LinkToken;
  * Adapted from the original handle parser by innocenzi.
  * https://github.com/tempestphp/tempestphp.com/blob/48b58184b43e80ab17f4375ac95affdf6d7a3bf2/src/Markdown/HandleParser.php
  */
-final class SocialHandleRule implements Rule, ProvidesFirstChar, ProvidesStopChar
+final class SocialHandleRule implements
+    Rule,
+    ProvidesFirstChar,
+    ProvidesStopChar
 {
     private(set) string $firstChar = '{';
     private(set) string $stopChar = '{';
@@ -73,15 +76,21 @@ final class SocialHandleRule implements Rule, ProvidesFirstChar, ProvidesStopCha
         );
     }
 
-    private function createSocialUrl(Parser $parser, string $platform, ?string $handle): string
-    {
+    private function createSocialUrl(
+        Parser $parser,
+        string $platform,
+        ?string $handle,
+    ): string {
         return match ($platform) {
             'bluesky', 'bsky' => "https://bsky.app/profile/{$handle}",
             'gh', 'github' => "https://github.com/{$handle}",
             'x', 'twitter' => "https://x.com/{$handle}",
             // In theory, we should never reach here given the parsing rules.
             // But it doesn't hurt anyone either. We may use this later if we allow extensions.
-            default => throw new SocialHandlePlatformWasUnknown($parser, $platform),
+            default => throw new SocialHandlePlatformWasUnknown(
+                $parser,
+                $platform,
+            ),
         };
     }
 }

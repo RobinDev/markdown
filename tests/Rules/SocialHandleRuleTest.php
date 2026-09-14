@@ -30,27 +30,41 @@ final class SocialHandleRuleTest extends ParserTestCase
     #[Test]
     public function social_handle_consumes_closing_brace_with_text_fallback(): void
     {
-        $parser = new Parser(highlighter: null, rules: [new SocialHandleRule(), new TextRule()]);
+        $parser = new Parser(highlighter: null, rules: [
+            new SocialHandleRule(),
+            new TextRule(),
+        ]);
 
         $html = $parser->parse('Hello {gh:alice}!')->html;
 
-        $this->assertSame('Hello <a href="https://github.com/alice">@alice</a>!', $html);
+        $this->assertSame(
+            'Hello <a href="https://github.com/alice">@alice</a>!',
+            $html,
+        );
     }
 
     #[Test]
     public function prepended_social_handle_rule_parses_handles_in_paragraphs(): void
     {
-        $parser = new Parser(highlighter: null)->prependRules(new SocialHandleRule());
+        $parser = new Parser(highlighter: null)->prependRules(
+            new SocialHandleRule(),
+        );
 
         $html = $parser->parse('Thoughts of {x:brendt_gd}.')->html;
 
-        $this->assertSame('<p>Thoughts of <a href="https://x.com/brendt_gd">@brendt_gd</a>.</p>', $html);
+        $this->assertSame(
+            '<p>Thoughts of <a href="https://x.com/brendt_gd">@brendt_gd</a>.</p>',
+            $html,
+        );
     }
 
     #[Test]
     public function unclosed_social_handle_preserves_remaining_text(): void
     {
-        $parser = new Parser(highlighter: null, rules: [new SocialHandleRule(), new TextRule()]);
+        $parser = new Parser(highlighter: null, rules: [
+            new SocialHandleRule(),
+            new TextRule(),
+        ]);
         $content = 'Hello {gh:alice,Read this sentence.';
 
         $this->assertSame($content, $parser->parse($content)->html);
@@ -59,20 +73,28 @@ final class SocialHandleRuleTest extends ParserTestCase
     #[Test]
     public function social_handle_preserves_underscores_in_default_label(): void
     {
-        $parser = new Parser(highlighter: null, rules: [new SocialHandleRule()]);
+        $parser =
+            new Parser(highlighter: null, rules: [new SocialHandleRule()]);
 
         $html = $parser->parse('{x:my_test_account}')->html;
 
-        $this->assertSame('<a href="https://x.com/my_test_account">@my_test_account</a>', $html);
+        $this->assertSame(
+            '<a href="https://x.com/my_test_account">@my_test_account</a>',
+            $html,
+        );
     }
 
     #[Test]
     public function invalid_social_handle_throws_markdown_exception(): void
     {
-        $parser = new Parser(highlighter: null)->prependRules(new SocialHandleRule());
+        $parser = new Parser(highlighter: null)->prependRules(
+            new SocialHandleRule(),
+        );
 
         $this->expectException(SocialHandleWasInvalid::class);
-        $this->expectExceptionMessage("The provided social handle was invalid:\n\n01 > {gh:}\n");
+        $this->expectExceptionMessage(
+            "The provided social handle was invalid:\n\n01 > {gh:}\n",
+        );
 
         $parser->parse('{gh:}');
     }
@@ -80,10 +102,14 @@ final class SocialHandleRuleTest extends ParserTestCase
     #[Test]
     public function empty_handle_throws_markdown_exception(): void
     {
-        $parser = new Parser(highlighter: null)->prependRules(new SocialHandleRule());
+        $parser = new Parser(highlighter: null)->prependRules(
+            new SocialHandleRule(),
+        );
 
         $this->expectException(SocialHandleWasInvalid::class);
-        $this->expectExceptionMessage("The provided social handle was invalid:\n\n01 > {gh:,Testing}\n");
+        $this->expectExceptionMessage(
+            "The provided social handle was invalid:\n\n01 > {gh:,Testing}\n",
+        );
 
         $parser->parse('{gh:,Testing}');
     }
@@ -91,10 +117,14 @@ final class SocialHandleRuleTest extends ParserTestCase
     #[Test]
     public function empty_label_throws_markdown_exception(): void
     {
-        $parser = new Parser(highlighter: null)->prependRules(new SocialHandleRule());
+        $parser = new Parser(highlighter: null)->prependRules(
+            new SocialHandleRule(),
+        );
 
         $this->expectException(SocialHandleWasInvalid::class);
-        $this->expectExceptionMessage("The provided social handle was invalid:\n\n01 > {gh:aidan-casey,}\n");
+        $this->expectExceptionMessage(
+            "The provided social handle was invalid:\n\n01 > {gh:aidan-casey,}\n",
+        );
 
         $parser->parse('{gh:aidan-casey,}');
     }
@@ -102,10 +132,14 @@ final class SocialHandleRuleTest extends ParserTestCase
     #[Test]
     public function whitespace_label_throws_markdown_exception(): void
     {
-        $parser = new Parser(highlighter: null)->prependRules(new SocialHandleRule());
+        $parser = new Parser(highlighter: null)->prependRules(
+            new SocialHandleRule(),
+        );
 
         $this->expectException(SocialHandleWasInvalid::class);
-        $this->expectExceptionMessage("The provided social handle was invalid:\n\n01 > {gh:aidan-casey,  }\n");
+        $this->expectExceptionMessage(
+            "The provided social handle was invalid:\n\n01 > {gh:aidan-casey,  }\n",
+        );
 
         $parser->parse('{gh:aidan-casey,  }');
     }
@@ -113,7 +147,9 @@ final class SocialHandleRuleTest extends ParserTestCase
     #[Test]
     public function social_handles_cannot_span_lines(): void
     {
-        $parser = new Parser(highlighter: null)->prependRules(new SocialHandleRule());
+        $parser = new Parser(highlighter: null)->prependRules(
+            new SocialHandleRule(),
+        );
 
         $content = (string) $parser->parse("{gh:\r\naidan-casey}");
 

@@ -22,7 +22,10 @@ class ItalicTokenTest extends ParserTestCase
     {
         $token = new ItalicToken('hello **world**');
 
-        $this->assertEquals('<em>hello <strong>world</strong></em>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<em>hello <strong>world</strong></em>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -30,7 +33,10 @@ class ItalicTokenTest extends ParserTestCase
     {
         $token = new ItalicToken('hello ~~world~~');
 
-        $this->assertEquals('<em>hello <s>world</s></em>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<em>hello <s>world</s></em>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -38,6 +44,9 @@ class ItalicTokenTest extends ParserTestCase
     {
         $token = new ItalicToken('hello [world](#)');
 
-        $this->assertEquals('<em>hello <a href="#">world</a></em>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<em>hello <a href="#">world</a></em>',
+            $token->parse(new Parser()),
+        );
     }
 }

@@ -12,7 +12,10 @@ class NewLineRuleTest extends ParserTestCase
     #[Test]
     public function test_lex(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new NewLineRule()])->parse("\n");
+        $html =
+            (string) new Parser(highlighter: null, rules: [new NewLineRule()])->parse(
+                "\n",
+            );
 
         $this->assertSame("\n", $html);
     }
@@ -20,7 +23,10 @@ class NewLineRuleTest extends ParserTestCase
     #[Test]
     public function test_lex_multiple_newlines(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new NewLineRule()])->parse("\n\n\n");
+        $html =
+            (string) new Parser(highlighter: null, rules: [new NewLineRule()])->parse(
+                "\n\n\n",
+            );
 
         $this->assertSame("\n\n\n", $html);
     }

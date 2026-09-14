@@ -14,7 +14,10 @@ class HtmlCommentRuleTest extends ParserTestCase
     #[Test]
     public function test_lex(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new HtmlCommentRule()])->parse('<!-- comment -->');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HtmlCommentRule()])->parse(
+                '<!-- comment -->',
+            );
 
         $this->assertSame('<!-- comment -->', $html);
     }
@@ -24,7 +27,10 @@ class HtmlCommentRuleTest extends ParserTestCase
     {
         $comment = "<!--\nmultiline\ncomment\n-->";
 
-        $html = (string) new Parser(highlighter: null, rules: [new HtmlCommentRule()])->parse($comment);
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HtmlCommentRule()])->parse(
+                $comment,
+            );
 
         $this->assertSame($comment, $html);
     }
@@ -32,8 +38,15 @@ class HtmlCommentRuleTest extends ParserTestCase
     #[Test]
     public function test_lex_with_surrounding_content(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new NewLineRule(), new HtmlCommentRule(), new ParagraphRule()])->parse("Hello\n\n<!-- comment -->\n\nWorld");
+        $html = (string) new Parser(highlighter: null, rules: [
+            new NewLineRule(),
+            new HtmlCommentRule(),
+            new ParagraphRule(),
+        ])->parse("Hello\n\n<!-- comment -->\n\nWorld");
 
-        $this->assertSame("<p>Hello</p>\n\n<!-- comment -->\n\n<p>World</p>", $html);
+        $this->assertSame(
+            "<p>Hello</p>\n\n<!-- comment -->\n\n<p>World</p>",
+            $html,
+        );
     }
 }

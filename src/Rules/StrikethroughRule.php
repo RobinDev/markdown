@@ -10,7 +10,10 @@ use Tempest\Markdown\Token;
 use Tempest\Markdown\Tokens\StrikethroughToken;
 use Tempest\Markdown\Tokens\TextToken;
 
-final class StrikethroughRule implements Rule, ProvidesFirstChar, ProvidesStopChar
+final class StrikethroughRule implements
+    Rule,
+    ProvidesFirstChar,
+    ProvidesStopChar
 {
     private(set) string $firstChar = '~';
     private(set) string $stopChar = '~';

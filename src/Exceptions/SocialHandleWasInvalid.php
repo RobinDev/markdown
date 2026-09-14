@@ -7,7 +7,8 @@ use Tempest\Markdown\MarkdownException;
 use Tempest\Markdown\Parser;
 use Tempest\Markdown\RendersSnippet;
 
-final class SocialHandleWasInvalid extends Exception implements MarkdownException
+final class SocialHandleWasInvalid extends Exception implements
+    MarkdownException
 {
     use RendersSnippet;
 

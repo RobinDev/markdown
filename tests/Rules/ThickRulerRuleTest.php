@@ -12,7 +12,10 @@ class ThickRulerRuleTest extends ParserTestCase
     #[Test]
     public function test_lex(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new ThickRulerRule()])->parse('===');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new ThickRulerRule()])->parse(
+                '===',
+            );
 
         $this->assertSame('<hr/>', $html);
     }
@@ -20,7 +23,10 @@ class ThickRulerRuleTest extends ParserTestCase
     #[Test]
     public function test_lex_long(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new ThickRulerRule()])->parse('=====');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new ThickRulerRule()])->parse(
+                '=====',
+            );
 
         $this->assertSame('<hr/>', $html);
     }

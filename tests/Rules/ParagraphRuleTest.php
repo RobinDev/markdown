@@ -13,7 +13,10 @@ class ParagraphRuleTest extends ParserTestCase
     #[Test]
     public function test_single_line(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new ParagraphRule()])->parse("Hello, world!\n");
+        $html =
+            (string) new Parser(highlighter: null, rules: [new ParagraphRule()])->parse(
+                "Hello, world!\n",
+            );
 
         $this->assertSame("<p>Hello, world!\n</p>", $html);
     }
@@ -21,7 +24,10 @@ class ParagraphRuleTest extends ParserTestCase
     #[Test]
     public function test_multi_line_paragraph(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new ParagraphRule()])->parse("First line\nSecond line\n");
+        $html =
+            (string) new Parser(highlighter: null, rules: [new ParagraphRule()])->parse(
+                "First line\nSecond line\n",
+            );
 
         $this->assertSame("<p>First line\nSecond line\n</p>", $html);
     }
@@ -29,7 +35,10 @@ class ParagraphRuleTest extends ParserTestCase
     #[Test]
     public function test_stops_at_blank_line(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new NewLineRule(), new ParagraphRule()])->parse("First\nSecond\n\nThird");
+        $html = (string) new Parser(highlighter: null, rules: [
+            new NewLineRule(),
+            new ParagraphRule(),
+        ])->parse("First\nSecond\n\nThird");
 
         $this->assertSame("<p>First\nSecond</p>\n\n<p>Third</p>", $html);
     }
@@ -37,7 +46,10 @@ class ParagraphRuleTest extends ParserTestCase
     #[Test]
     public function test_paragraph_without_trailing_newline(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new ParagraphRule()])->parse('Hello, world!');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new ParagraphRule()])->parse(
+                'Hello, world!',
+            );
 
         $this->assertSame('<p>Hello, world!</p>', $html);
     }
@@ -47,8 +59,14 @@ class ParagraphRuleTest extends ParserTestCase
     {
         $parser = new Parser(highlighter: null, rules: [new ParagraphRule()]);
 
-        $this->assertSame('<h1 id="first-heading">First heading</h1>', (string) $parser->parse("First heading\n===="));
-        $this->assertSame('<h2 id="second-heading">Second heading</h2>', (string) $parser->parse("Second heading\n-----\n"));
+        $this->assertSame(
+            '<h1 id="first-heading">First heading</h1>',
+            (string) $parser->parse("First heading\n===="),
+        );
+        $this->assertSame(
+            '<h2 id="second-heading">Second heading</h2>',
+            (string) $parser->parse("Second heading\n-----\n"),
+        );
     }
 
     #[Test]
@@ -56,7 +74,10 @@ class ParagraphRuleTest extends ParserTestCase
     {
         $parser = new Parser(highlighter: null, rules: [new ParagraphRule()]);
 
-        $this->assertSame("<h2 id=\"first-second\">First\nSecond</h2>", (string) $parser->parse("First\nSecond\n---"));
+        $this->assertSame(
+            "<h2 id=\"first-second\">First\nSecond</h2>",
+            (string) $parser->parse("First\nSecond\n---"),
+        );
     }
 
     #[Test]
@@ -64,7 +85,10 @@ class ParagraphRuleTest extends ParserTestCase
     {
         $parser = new Parser(highlighter: null);
 
-        $this->assertSame('<h2 id="title">Title</h2><p>Body</p>', (string) $parser->parse("Title\n---\nBody"));
+        $this->assertSame(
+            '<h2 id="title">Title</h2><p>Body</p>',
+            (string) $parser->parse("Title\n---\nBody"),
+        );
     }
 
     #[Test]
@@ -72,6 +96,9 @@ class ParagraphRuleTest extends ParserTestCase
     {
         $parser = new Parser(highlighter: null);
 
-        $this->assertSame('<h1 id="one">One</h1><h2 id="two">Two</h2>', (string) $parser->parse("One\n===\nTwo\n---"));
+        $this->assertSame(
+            '<h1 id="one">One</h1><h2 id="two">Two</h2>',
+            (string) $parser->parse("One\n===\nTwo\n---"),
+        );
     }
 }

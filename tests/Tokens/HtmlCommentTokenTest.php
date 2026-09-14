@@ -31,6 +31,9 @@ class HtmlCommentTokenTest extends ParserTestCase
     {
         $token = new HtmlCommentToken('<!-- **bold** _italic_ -->');
 
-        $this->assertSame('<!-- **bold** _italic_ -->', $token->parse(new Parser()));
+        $this->assertSame(
+            '<!-- **bold** _italic_ -->',
+            $token->parse(new Parser()),
+        );
     }
 }

@@ -14,7 +14,10 @@ class BoldAndItalicTokenTest extends ParserTestCase
     {
         $token = new BoldAndItalicToken('world');
 
-        $this->assertEquals('<strong><em>world</em></strong>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<strong><em>world</em></strong>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -22,7 +25,10 @@ class BoldAndItalicTokenTest extends ParserTestCase
     {
         $token = new BoldAndItalicToken('hello ~~world~~');
 
-        $this->assertEquals('<strong><em>hello <s>world</s></em></strong>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<strong><em>hello <s>world</s></em></strong>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -30,6 +36,9 @@ class BoldAndItalicTokenTest extends ParserTestCase
     {
         $token = new BoldAndItalicToken('hello [world](#)');
 
-        $this->assertEquals('<strong><em>hello <a href="#">world</a></em></strong>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<strong><em>hello <a href="#">world</a></em></strong>',
+            $token->parse(new Parser()),
+        );
     }
 }

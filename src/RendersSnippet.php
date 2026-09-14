@@ -41,7 +41,12 @@ trait RendersSnippet
                 ? $errorLineNumber === $i
                 : $errorLineNumber === ($i + 1);
 
-            $paddedLineNumber = str_pad((string) $lineNumber, $padLength, '0', STR_PAD_LEFT);
+            $paddedLineNumber = str_pad(
+                (string) $lineNumber,
+                $padLength,
+                '0',
+                STR_PAD_LEFT,
+            );
 
             if ($isCurrentLine) {
                 $rendered .= "{$paddedLineNumber} > {$line}" . PHP_EOL;

@@ -32,7 +32,10 @@ class ImageTokenTest extends ParserTestCase
     {
         $token = new ImageToken('https://example.com/img.png', 'a cat');
 
-        $this->assertEquals('<img src="https://example.com/img.png" alt="a cat">', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<img src="https://example.com/img.png" alt="a cat">',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -40,7 +43,10 @@ class ImageTokenTest extends ParserTestCase
     {
         $token = new ImageToken('https://example.com/img.png', null);
 
-        $this->assertEquals('<img src="https://example.com/img.png">', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<img src="https://example.com/img.png">',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -48,7 +54,10 @@ class ImageTokenTest extends ParserTestCase
     {
         $token = new ImageToken('x" onerror="alert(1)', null);
 
-        $this->assertEquals('<img src="x&quot; onerror=&quot;alert(1)">', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<img src="x&quot; onerror=&quot;alert(1)">',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -56,7 +65,10 @@ class ImageTokenTest extends ParserTestCase
     {
         $token = new ImageToken('img.png', 'a" onerror="alert(1)');
 
-        $this->assertEquals('<img src="img.png" alt="a&quot; onerror=&quot;alert(1)">', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<img src="img.png" alt="a&quot; onerror=&quot;alert(1)">',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -80,9 +92,15 @@ class ImageTokenTest extends ParserTestCase
         HTML, $parsed->html);
 
         $this->assertFileExists($config->makePublicPath('/parrot.jpg'));
-        $this->assertFileExists($config->makePublicPath('/parrot-1920-1280.jpg'));
-        $this->assertFileExists($config->makePublicPath('/parrot-1606-1070.jpg'));
-        $this->assertFileExists($config->makePublicPath('/parrot-1214-809.jpg'));
+        $this->assertFileExists($config->makePublicPath(
+            '/parrot-1920-1280.jpg',
+        ));
+        $this->assertFileExists($config->makePublicPath(
+            '/parrot-1606-1070.jpg',
+        ));
+        $this->assertFileExists($config->makePublicPath(
+            '/parrot-1214-809.jpg',
+        ));
         $this->assertFileExists($config->makePublicPath('/parrot-607-404.jpg'));
     }
 }

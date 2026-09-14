@@ -29,7 +29,10 @@ final class LinkRule implements Rule, ProvidesFirstChar, ProvidesStopChar
 
         if ($parser->comesNext('(', 1)) {
             $parser->consumeIncluding('(');
-            $href = $parser->consumeUntilUnescaped(stopAt: ')', allowNestedAt: '(');
+            $href = $parser->consumeUntilUnescaped(
+                stopAt: ')',
+                allowNestedAt: '(',
+            );
             $parser->consumeIncluding(')');
         }
 

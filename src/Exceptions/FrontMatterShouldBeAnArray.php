@@ -7,7 +7,8 @@ use Tempest\Markdown\MarkdownException;
 use Tempest\Markdown\Parser;
 use Tempest\Markdown\RendersSnippet;
 
-final class FrontMatterShouldBeAnArray extends Exception implements MarkdownException
+final class FrontMatterShouldBeAnArray extends Exception implements
+    MarkdownException
 {
     use RendersSnippet;
 
@@ -15,6 +16,8 @@ final class FrontMatterShouldBeAnArray extends Exception implements MarkdownExce
     {
         $snippet = $this->renderSnippet($parser);
 
-        parent::__construct("Front matter can only be an array:\n\n{$snippet}\n");
+        parent::__construct(
+            "Front matter can only be an array:\n\n{$snippet}\n",
+        );
     }
 }

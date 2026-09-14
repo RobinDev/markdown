@@ -12,7 +12,10 @@ class HeadingRuleTest extends ParserTestCase
     #[Test]
     public function test_lex_h1(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse('# Hello');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse(
+                '# Hello',
+            );
 
         $this->assertSame('<h1 id="hello">Hello</h1>', $html);
     }
@@ -20,7 +23,10 @@ class HeadingRuleTest extends ParserTestCase
     #[Test]
     public function test_lex_deep_heading(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse('### Hello');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse(
+                '### Hello',
+            );
 
         $this->assertSame('<h3 id="hello">Hello</h3>', $html);
     }
@@ -28,7 +34,10 @@ class HeadingRuleTest extends ParserTestCase
     #[Test]
     public function test_heading_text_shorter_than_level(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse('#### Fin');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse(
+                '#### Fin',
+            );
 
         $this->assertSame('<h4 id="fin">Fin</h4>', $html);
     }
@@ -36,7 +45,10 @@ class HeadingRuleTest extends ParserTestCase
     #[Test]
     public function test_lex_with_heading_id(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse('### Hello ### hello-world');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse(
+                '### Hello ### hello-world',
+            );
 
         $this->assertSame('<h3 id="hello-world">Hello</h3>', $html);
     }
@@ -44,16 +56,28 @@ class HeadingRuleTest extends ParserTestCase
     #[Test]
     public function test_slug_is_constrained_to_a_safe_alphabet(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse('# Hello, "World" & Friends!');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse(
+                '# Hello, "World" & Friends!',
+            );
 
-        $this->assertSame('<h1 id="hello-world-friends">Hello, "World" & Friends!</h1>', $html);
+        $this->assertSame(
+            '<h1 id="hello-world-friends">Hello, "World" & Friends!</h1>',
+            $html,
+        );
     }
 
     #[Test]
     public function test_slug_cannot_break_out_of_the_id_attribute(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse('# h " onclick="alert(1)');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse(
+                '# h " onclick="alert(1)',
+            );
 
-        $this->assertSame('<h1 id="h-onclick-alert-1">h " onclick="alert(1)</h1>', $html);
+        $this->assertSame(
+            '<h1 id="h-onclick-alert-1">h " onclick="alert(1)</h1>',
+            $html,
+        );
     }
 }

@@ -199,7 +199,8 @@ final class Parser
             $tokens = [];
 
             while ($parser->current !== null) {
-                foreach ($parser->perCharRules[$parser->current] ?? $parser->defaultRules as $rule) {
+                foreach ($parser->perCharRules[$parser->current]
+                    ?? $parser->defaultRules as $rule) {
                     if (! $rule->shouldParse($parser)) {
                         continue;
                     }
@@ -259,8 +260,12 @@ final class Parser
         self::$depth++;
     }
 
-    public function comesNext(string $search, ?int $length = null, int $offset = 0, bool $caseSensitive = true): bool
-    {
+    public function comesNext(
+        string $search,
+        ?int $length = null,
+        int $offset = 0,
+        bool $caseSensitive = true,
+    ): bool {
         $length ??= strlen($search);
 
         if ($length === 1) {
@@ -345,8 +350,10 @@ final class Parser
         return $this->consume($pos - $this->position);
     }
 
-    public function consumeUntilUnescaped(string $stopAt, ?string $allowNestedAt = null): string
-    {
+    public function consumeUntilUnescaped(
+        string $stopAt,
+        ?string $allowNestedAt = null,
+    ): string {
         $result = '';
         $depth = 0;
 

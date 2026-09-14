@@ -14,7 +14,10 @@ class CodeTokenTest extends ParserTestCase
     {
         $token = new CodeToken(null, '$foo');
 
-        $this->assertEquals('<code class="language-txt">$foo</code>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<code class="language-txt">$foo</code>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -22,7 +25,10 @@ class CodeTokenTest extends ParserTestCase
     {
         $token = new CodeToken('php', 'echo "hi";');
 
-        $this->assertEquals('<code class="language-php"><span class="hl-keyword">echo</span> <span class="hl-value">&quot;hi&quot;</span>;</code>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<code class="language-php"><span class="hl-keyword">echo</span> <span class="hl-value">&quot;hi&quot;</span>;</code>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -30,7 +36,10 @@ class CodeTokenTest extends ParserTestCase
     {
         $token = new CodeToken('php', 'echo "hi";');
 
-        $this->assertEquals('<code class="language-php">echo &quot;hi&quot;;</code>', $token->parse(new Parser(highlighter: null)));
+        $this->assertEquals(
+            '<code class="language-php">echo &quot;hi&quot;;</code>',
+            $token->parse(new Parser(highlighter: null)),
+        );
     }
 
     #[Test]
@@ -38,7 +47,10 @@ class CodeTokenTest extends ParserTestCase
     {
         $token = new CodeToken('a"onmouseover="alert(1)', 'code');
 
-        $this->assertEquals('<code class="language-txt">code</code>', $token->parse(new Parser()));
+        $this->assertEquals(
+            '<code class="language-txt">code</code>',
+            $token->parse(new Parser()),
+        );
     }
 
     #[Test]
@@ -46,6 +58,9 @@ class CodeTokenTest extends ParserTestCase
     {
         $token = new CodeToken('a"onmouseover="alert(1)', 'code');
 
-        $this->assertEquals('<code class="language-a&quot;onmouseover=&quot;alert(1)">code</code>', $token->parse(new Parser(highlighter: null)));
+        $this->assertEquals(
+            '<code class="language-a&quot;onmouseover=&quot;alert(1)">code</code>',
+            $token->parse(new Parser(highlighter: null)),
+        );
     }
 }

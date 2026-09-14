@@ -22,7 +22,7 @@ ignore = [
 ]
 
 [formatter]
-print-width = 180
+print-width = 80
 tab-width = 4
 use-tabs = false
 indent-heredoc = false

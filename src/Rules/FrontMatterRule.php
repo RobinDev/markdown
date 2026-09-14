@@ -29,7 +29,10 @@ final class FrontMatterRule implements Rule, ProvidesFirstChar
 
         $openingLength = strspn($parser->content, '-', $parser->position);
 
-        return trim(substr($parser->content, $parser->position + $openingLength)) !== '';
+        return (
+            trim(substr($parser->content, $parser->position + $openingLength))
+            !== ''
+        );
     }
 
     public function parse(Parser $parser): ?Token
@@ -40,7 +43,9 @@ final class FrontMatterRule implements Rule, ProvidesFirstChar
         $content = $parser->consumeUntilString('---');
 
         if (! $parser->comesNext('---', 3)) {
-            throw new FrontMatterWasNotProperlyClosed($parser->withPosition($originalPosition));
+            throw new FrontMatterWasNotProperlyClosed($parser->withPosition(
+                $originalPosition,
+            ));
         }
 
         $parser->consumeWhile('-');
@@ -49,11 +54,16 @@ final class FrontMatterRule implements Rule, ProvidesFirstChar
         try {
             $data = Yaml::parse($content);
         } catch (ParseException $cause) {
-            throw new FrontMatterCouldNotBeParsed($parser->withPosition($originalPosition), $cause);
+            throw new FrontMatterCouldNotBeParsed(
+                $parser->withPosition($originalPosition),
+                $cause,
+            );
         }
 
         if (! is_array($data)) {
-            throw new FrontMatterShouldBeAnArray($parser->withPosition($originalPosition));
+            throw new FrontMatterShouldBeAnArray($parser->withPosition(
+                $originalPosition,
+            ));
         }
 
         return new FrontMatterToken($data);

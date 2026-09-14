@@ -97,7 +97,10 @@ class MarkdownRendererTest extends ParserTestCase
             ],
         ], 'Benchmark Results');
 
-        $renderer->render($reports, new Config('markdown', ['file' => null, 'outlier_min_diff' => 1.0]));
+        $renderer->render($reports, new Config('markdown', [
+            'file' => null,
+            'outlier_min_diff' => 1.0,
+        ]));
 
         $this->assertSame(<<<'MARKDOWN'
         ## Benchmark Results
@@ -138,7 +141,10 @@ class MarkdownRendererTest extends ParserTestCase
             ],
         ], 'Benchmark Results');
 
-        $renderer->render($reports, new Config('markdown', ['file' => null, 'outlier_min_diff' => 5.0]));
+        $renderer->render($reports, new Config('markdown', [
+            'file' => null,
+            'outlier_min_diff' => 5.0,
+        ]));
 
         $this->assertSame(<<<'MARKDOWN'
         ## Benchmark Results
@@ -165,6 +171,8 @@ class MarkdownRendererTest extends ParserTestCase
 
         $table = new Table($tableRows, headers: null, title: $title);
 
-        return Reports::fromReport(ReportBuilder::create()->addObject($table)->build());
+        return Reports::fromReport(
+            ReportBuilder::create()->addObject($table)->build(),
+        );
     }
 }

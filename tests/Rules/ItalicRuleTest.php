@@ -15,7 +15,10 @@ class ItalicRuleTest extends ParserTestCase
     #[Test]
     public function test_lex_with_underscore(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new ItalicRule()])->parse('_italic_');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new ItalicRule()])->parse(
+                '_italic_',
+            );
 
         $this->assertSame('<em>italic</em>', $html);
     }
@@ -23,7 +26,11 @@ class ItalicRuleTest extends ParserTestCase
     #[Test]
     public function test_underscore_must_be_terminated(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new NewLineRule(), new ItalicRule(), new ParagraphRule()])->parse("Hello_world\n\nHi");
+        $html = (string) new Parser(highlighter: null, rules: [
+            new NewLineRule(),
+            new ItalicRule(),
+            new ParagraphRule(),
+        ])->parse("Hello_world\n\nHi");
 
         $this->assertSame("<p>Hello_world</p>\n\n<p>Hi</p>", $html);
     }
@@ -31,7 +38,10 @@ class ItalicRuleTest extends ParserTestCase
     #[Test]
     public function test_lex_with_asterisk(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new ItalicRule()])->parse('*italic*');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new ItalicRule()])->parse(
+                '*italic*',
+            );
 
         $this->assertSame('<em>italic</em>', $html);
     }
@@ -39,7 +49,11 @@ class ItalicRuleTest extends ParserTestCase
     #[Test]
     public function test_asterisk_must_be_terminated(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new NewLineRule(), new ItalicRule(), new ParagraphRule()])->parse("Hello*world\n\nHi");
+        $html = (string) new Parser(highlighter: null, rules: [
+            new NewLineRule(),
+            new ItalicRule(),
+            new ParagraphRule(),
+        ])->parse("Hello*world\n\nHi");
 
         $this->assertSame("<p>Hello*world</p>\n\n<p>Hi</p>", $html);
     }
@@ -47,7 +61,10 @@ class ItalicRuleTest extends ParserTestCase
     #[Test]
     public function test_multiple_in_a_row(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new BoldRule(), new ItalicRule()])->parse('_a__b_');
+        $html = (string) new Parser(highlighter: null, rules: [
+            new BoldRule(),
+            new ItalicRule(),
+        ])->parse('_a__b_');
 
         $this->assertSame('<em>a</em><em>b</em>', $html);
     }

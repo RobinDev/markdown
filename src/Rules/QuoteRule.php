@@ -20,7 +20,11 @@ final class QuoteRule implements Rule, ProvidesFirstChar, ProvidesStopChar
             return false;
         }
 
-        return $parser->position === 0 || ($parser->content[$parser->position - 1] ?? null) === PHP_EOL;
+        return (
+            $parser->position === 0
+            || ($parser->content[$parser->position - 1] ?? null)
+            === PHP_EOL
+        );
     }
 
     public function parse(Parser $parser): Token

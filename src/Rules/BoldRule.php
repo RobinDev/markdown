@@ -22,7 +22,12 @@ final class BoldRule implements Rule, ProvidesFirstChar, ProvidesStopChar
             return false;
         }
 
-        $lookahead = $parser->lookaheadUntil($stopToken, $stopToken, $stopToken, $stopToken);
+        $lookahead = $parser->lookaheadUntil(
+            $stopToken,
+            $stopToken,
+            $stopToken,
+            $stopToken,
+        );
 
         if (count($lookahead) !== 4) {
             return false;

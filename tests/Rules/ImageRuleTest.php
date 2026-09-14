@@ -14,7 +14,10 @@ class ImageRuleTest extends ParserTestCase
     #[Test]
     public function test_lex(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new ImageRule()])->parse('![alt](src)');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new ImageRule()])->parse(
+                '![alt](src)',
+            );
 
         $this->assertSame('<img src="src" alt="alt">', $html);
     }
@@ -22,7 +25,10 @@ class ImageRuleTest extends ParserTestCase
     #[Test]
     public function test_lex_without_alt(): void
     {
-        $html = (string) new Parser(highlighter: null, rules: [new ImageRule()])->parse('![](src)');
+        $html =
+            (string) new Parser(highlighter: null, rules: [new ImageRule()])->parse(
+                '![](src)',
+            );
 
         $this->assertSame('<img src="src">', $html);
     }
@@ -31,7 +37,9 @@ class ImageRuleTest extends ParserTestCase
     public function test_invalid_image_throws_exception(): void
     {
         try {
-            new Parser(highlighter: null, rules: [new ImageRule()])->parse('Hello ![alt] world');
+            new Parser(highlighter: null, rules: [new ImageRule()])->parse(
+                'Hello ![alt] world',
+            );
         } catch (ImageSourceWasMissing $e) {
             $this->assertStringContainsString(<<<'TXT'
             01 > Hello ![alt] world
@@ -43,7 +51,9 @@ class ImageRuleTest extends ParserTestCase
     public function test_invalid_image_source_throws_exception(): void
     {
         try {
-            new Parser(highlighter: null, rules: [new ImageRule()])->parse('Hello ![alt](foo world');
+            new Parser(highlighter: null, rules: [new ImageRule()])->parse(
+                'Hello ![alt](foo world',
+            );
         } catch (ImageSourceWasNotClosed $e) {
             $this->assertStringContainsString(<<<'TXT'
             01 > Hello ![alt](foo world

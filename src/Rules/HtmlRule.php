@@ -19,9 +19,25 @@ final class HtmlRule implements Rule, ProvidesFirstChar
 
     public function parse(Parser $parser): Token
     {
-        $voidTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+        $voidTags = [
+            'area',
+            'base',
+            'br',
+            'col',
+            'embed',
+            'hr',
+            'img',
+            'input',
+            'link',
+            'meta',
+            'param',
+            'source',
+            'track',
+            'wbr',
+        ];
 
-        $tagOpen = $parser->consume() . $parser->consumeWhile(Parser::WHITESPACE);
+        $tagOpen =
+            $parser->consume() . $parser->consumeWhile(Parser::WHITESPACE);
         $tagName = $parser->consumeUntil(' >');
         $tagClose = $parser->consumeIncluding('>');
         $openingTag = $tagOpen . $tagName . $tagClose;
@@ -32,7 +48,9 @@ final class HtmlRule implements Rule, ProvidesFirstChar
 
         // Self-closing tags (<img />, <br />) need no closing tag.
         if (str_ends_with($openingTag, '/>')) {
-            return new HtmlToken($openingTag . $parser->consumeWhile(Parser::NEW_LINE));
+            return new HtmlToken(
+                $openingTag . $parser->consumeWhile(Parser::NEW_LINE),
+            );
         }
 
         // Extract tag name from opening tag: "<div class..." → "div".

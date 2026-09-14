@@ -22,7 +22,10 @@ final class ParserTest extends ParserTestCase
         MD);
 
         $this->assertStringContainsString('<h1 id="test">Test</h1>', $html);
-        $this->assertStringContainsString('<p>Hello <strong>world</strong></p>', $html);
+        $this->assertStringContainsString(
+            '<p>Hello <strong>world</strong></p>',
+            $html,
+        );
     }
 
     #[Test]
@@ -108,8 +111,14 @@ final class ParserTest extends ParserTestCase
         $modified = $parser->removeRules(HeadingRule::class);
 
         $this->assertNotSame($parser, $modified);
-        $this->assertContains(HeadingRule::class, array_map(fn ($r) => $r::class, $parser->rules));
-        $this->assertNotContains(HeadingRule::class, array_map(fn ($r) => $r::class, $modified->rules));
+        $this->assertContains(HeadingRule::class, array_map(
+            fn ($r) => $r::class,
+            $parser->rules,
+        ));
+        $this->assertNotContains(HeadingRule::class, array_map(
+            fn ($r) => $r::class,
+            $modified->rules,
+        ));
     }
 
     #[Test]
@@ -147,9 +156,13 @@ final class ParserTest extends ParserTestCase
 
     #[Test]
     #[DataProvider('provideSocialHandleInlineContexts')]
-    public function test_registered_social_handles_render_in_inline_contexts(string $markdown, string $expectedHtml): void
-    {
-        $parser = new Parser(highlighter: null)->prependRules(new SocialHandleRule());
+    public function test_registered_social_handles_render_in_inline_contexts(
+        string $markdown,
+        string $expectedHtml,
+    ): void {
+        $parser = new Parser(highlighter: null)->prependRules(
+            new SocialHandleRule(),
+        );
 
         $this->assertSame($expectedHtml, $parser->parse($markdown)->html);
     }
@@ -207,7 +220,10 @@ final class ParserTest extends ParserTestCase
     #[Test]
     public function test_parsing_twice_as_many_social_handles_takes_less_than_three_times_as_long(): void
     {
-        $parser = new Parser(highlighter: null, rules: [new SocialHandleRule(), new TextRule()]);
+        $parser = new Parser(highlighter: null, rules: [
+            new SocialHandleRule(),
+            new TextRule(),
+        ]);
         $parser->parse('{gh:alice} ');
 
         $small = str_repeat('{gh:alice} ', 8000);
@@ -225,13 +241,26 @@ final class ParserTest extends ParserTestCase
             $largeHtml = $parser->parse($large)->html;
             $largeTimes[] = hrtime(true) - $start;
 
-            $this->assertSame(8000, substr_count($smallHtml, '<a href="https://github.com/alice">@alice</a>'));
-            $this->assertSame(16_000, substr_count($largeHtml, '<a href="https://github.com/alice">@alice</a>'));
+            $this->assertSame(8000, substr_count(
+                $smallHtml,
+                '<a href="https://github.com/alice">@alice</a>',
+            ));
+            $this->assertSame(16_000, substr_count(
+                $largeHtml,
+                '<a href="https://github.com/alice">@alice</a>',
+            ));
         }
 
         $growth = min($largeTimes) / min($smallTimes);
 
-        $this->assertLessThan(3.0, $growth, sprintf('Doubling the number of handles took %.2fx as long; expected near-linear growth.', $growth));
+        $this->assertLessThan(
+            3.0,
+            $growth,
+            sprintf(
+                'Doubling the number of handles took %.2fx as long; expected near-linear growth.',
+                $growth,
+            ),
+        );
     }
 
     #[Test]
@@ -242,7 +271,10 @@ final class ParserTest extends ParserTestCase
 
         $noHighlighter = new Parser(highlighter: null);
 
-        $this->assertSame('<p><code>&lt;b&gt;x&lt;/b&gt;</code></p>', $noHighlighter->parse('`<b>x</b>`')->html);
+        $this->assertSame(
+            '<p><code>&lt;b&gt;x&lt;/b&gt;</code></p>',
+            $noHighlighter->parse('`<b>x</b>`')->html,
+        );
     }
 
     #[Test]
@@ -264,7 +296,9 @@ final class ParserTest extends ParserTestCase
     #[Test]
     public function test_default_max_nesting_depth_allows_normal_content(): void
     {
-        $html = (string) new Parser()->parse("Hello **bold** and **more bold**\n\n- one\n  - two");
+        $html = (string) new Parser()->parse(
+            "Hello **bold** and **more bold**\n\n- one\n  - two",
+        );
 
         $this->assertStringContainsString('<strong>bold</strong>', $html);
         $this->assertStringContainsString('<li>', $html);

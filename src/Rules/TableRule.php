@@ -23,7 +23,10 @@ final class TableRule implements Rule, ProvidesFirstChar
             return true;
         }
 
-        $nextTwoLines = $parser->lookaheadUntil(Parser::NEW_LINE, Parser::NEW_LINE);
+        $nextTwoLines = $parser->lookaheadUntil(
+            Parser::NEW_LINE,
+            Parser::NEW_LINE,
+        );
 
         if (count($nextTwoLines) !== 2) {
             return false;
@@ -64,7 +67,10 @@ final class TableRule implements Rule, ProvidesFirstChar
             $line = substr($line, 0, -1);
         }
 
-        $cells = $line |> (fn ($x) => explode('|', $x)) |> (fn ($x) => array_map(trim(...), $x)) |> array_values(...);
+        $cells = $line
+            |> (fn ($x) => explode('|', $x))
+            |> (fn ($x) => array_map(trim(...), $x))
+            |> array_values(...);
 
         // Determine if is header row
         $token = $parser->lastToken;
