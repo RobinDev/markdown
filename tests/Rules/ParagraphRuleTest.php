@@ -41,4 +41,21 @@ class ParagraphRuleTest extends ParserTestCase
 
         $this->assertSame('<p>Hello, world!</p>', $html);
     }
+
+    #[Test]
+    public function test_setext_headings(): void
+    {
+        $parser = new Parser(highlighter: null, rules: [new ParagraphRule()]);
+
+        $this->assertSame('<h1 id="first-heading">First heading</h1>', (string) $parser->parse("First heading\n===="));
+        $this->assertSame('<h2 id="second-heading">Second heading</h2>', (string) $parser->parse("Second heading\n-----\n"));
+    }
+
+    #[Test]
+    public function test_setext_heading_can_span_multiple_lines(): void
+    {
+        $parser = new Parser(highlighter: null, rules: [new ParagraphRule()]);
+
+        $this->assertSame("<h2 id=\"first-second\">First\nSecond</h2>", (string) $parser->parse("First\nSecond\n---"));
+    }
 }
