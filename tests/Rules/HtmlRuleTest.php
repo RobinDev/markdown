@@ -82,4 +82,64 @@ class HtmlRuleTest extends ParserTestCase
 
         $this->assertSame("<BR>\n<p>Hello</p>", $html);
     }
+
+    #[Test]
+    public function lex_keeps_script_content_raw(): void
+    {
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HtmlRule()])->parse(
+                '<script>const x = "**a**";</script>',
+            );
+
+        $this->assertSame('<script>const x = "**a**";</script>', $html);
+    }
+
+    #[Test]
+    public function lex_keeps_style_content_raw(): void
+    {
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HtmlRule()])->parse(
+                '<style>a::after{content:"*x*"}</style>',
+            );
+
+        $this->assertSame('<style>a::after{content:"*x*"}</style>', $html);
+    }
+
+    #[Test]
+    public function lex_keeps_pre_and_textarea_content_raw(): void
+    {
+        $parser = new Parser(highlighter: null, rules: [new HtmlRule()]);
+
+        $this->assertSame(
+            '<pre>**a** _b_</pre>',
+            (string) $parser->parse('<pre>**a** _b_</pre>'),
+        );
+
+        $this->assertSame(
+            '<textarea>**a**</textarea>',
+            (string) $parser->parse('<textarea>**a**</textarea>'),
+        );
+    }
+
+    #[Test]
+    public function lex_detects_raw_text_tags_case_insensitively(): void
+    {
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HtmlRule()])->parse(
+                '<SCRIPT>**a**</SCRIPT>',
+            );
+
+        $this->assertSame('<SCRIPT>**a**</SCRIPT>', $html);
+    }
+
+    #[Test]
+    public function lex_still_parses_markdown_in_other_elements(): void
+    {
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HtmlRule()])->parse(
+                '<div>**a**</div>',
+            );
+
+        $this->assertSame('<div><strong>a</strong></div>', $html);
+    }
 }
