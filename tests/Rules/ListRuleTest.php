@@ -45,6 +45,28 @@ class ListRuleTest extends ParserTestCase
     }
 
     #[Test]
+    public function test_lazy_continuation_preserves_following_blocks(): void
+    {
+        $parser = new Parser(highlighter: null);
+
+        $this->assertSame("<ul><li>one</li></ul><hr/>\n<p>after</p>", (string) $parser->parse("- one\n---\nafter"));
+        $this->assertSame('<ul><li>one</li></ul><div>block</div>', (string) $parser->parse("- one\n<div>block</div>"));
+    }
+
+    #[Test]
+    public function test_nested_list_after_lazy_continuation(): void
+    {
+        $parser = new Parser(highlighter: null);
+
+        foreach (['-', '*', '+'] as $marker) {
+            $this->assertSame(
+                '<ul><li>one continued<ul><li>child</li></ul></li><li>two</li></ul>',
+                (string) $parser->parse("{$marker} one\ncontinued\n  {$marker} child\n{$marker} two"),
+            );
+        }
+    }
+
+    #[Test]
     public function test_lex_multiline_items(): void
     {
         $html = (string) new Parser(highlighter: null, rules: [new ListRule()])->parse("- one\n   continued\n   further\n- two\n");
