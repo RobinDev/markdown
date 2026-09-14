@@ -10,16 +10,18 @@ use Tempest\Markdown\Tokens\PreToken;
 
 final class PreRule implements Rule, ProvidesFirstChar
 {
-    public string $firstChar = '`';
+    public string $firstChar = '`~';
 
     public function shouldParse(Parser $parser): bool
     {
-        return $parser->comesNext('```', 3);
+        return $parser->comesNext('```', 3) || $parser->comesNext('~~~', 3);
     }
 
     public function parse(Parser $parser): Token
     {
-        $parser->consumeIncluding('```');
+        // A fence is a run of at least three backticks or tildes, and is
+        // closed by a run of the same character.
+        $fence = $parser->consumeWhile($parser->current ?? '`');
 
         $language = $parser->consumeUntil(Parser::WHITESPACE);
 
@@ -27,9 +29,9 @@ final class PreRule implements Rule, ProvidesFirstChar
 
         $parser->consumeWhile(Parser::NEW_LINE);
 
-        $content = $parser->consumeUntilString('```');
+        $content = $parser->consumeUntilString($fence);
 
-        $parser->consumeIncluding('```');
+        $parser->consumeIncluding($fence);
         $parser->consumeWhile(Parser::NEW_LINE);
 
         // Remove trailing newline.
