@@ -259,15 +259,53 @@ final class Parser
         self::$depth++;
     }
 
-    public function comesNext(string $search, ?int $length = null, int $offset = 0): bool
+    public function comesNext(string $search, ?int $length = null, int $offset = 0, bool $caseSensitive = true): bool
     {
         $length ??= strlen($search);
 
         if ($length === 1) {
-            return ($this->content[$this->position + $offset] ?? null) === $search;
+            $char = $this->content[$this->position + $offset] ?? null;
+
+            if ($char === null) {
+                return false;
+            }
+
+            return $caseSensitive
+                ? $char === $search
+                : strcasecmp($char, $search) === 0;
         }
 
-        return substr_compare($this->content, $search, $this->position + $offset, $length) === 0;
+        return (
+            substr_compare(
+                haystack: $this->content,
+                needle: $search,
+                offset: $this->position + $offset,
+                length: $length,
+                case_insensitive: ! $caseSensitive,
+            ) === 0
+        );
+    }
+
+    public function hasNext(string $search, string $stopAt = ''): bool
+    {
+        $position = strpos($this->content, $search, $this->position);
+
+        if ($position === false) {
+            return false;
+        }
+
+        if ($stopAt === '') {
+            return true;
+        }
+
+        $stopPosition = strcspn(
+            $this->content,
+            $stopAt,
+            $this->position,
+            $position - $this->position + 1,
+        );
+
+        return $position < ($this->position + $stopPosition);
     }
 
     public function consume(int $length = 1): string

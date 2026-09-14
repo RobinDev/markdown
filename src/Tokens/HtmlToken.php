@@ -9,6 +9,7 @@ use Tempest\Markdown\Rules\CodeRule;
 use Tempest\Markdown\Rules\ImageRule;
 use Tempest\Markdown\Rules\ItalicRule;
 use Tempest\Markdown\Rules\LinkRule;
+use Tempest\Markdown\Rules\SocialHandleRule;
 use Tempest\Markdown\Rules\StrikethroughRule;
 use Tempest\Markdown\Rules\TextRule;
 use Tempest\Markdown\Token;
@@ -28,6 +29,7 @@ final class HtmlToken implements Token
                 new ItalicRule(),
                 new StrikethroughRule(),
                 new LinkRule(),
+                new SocialHandleRule(),
                 new ImageRule(),
                 new CodeRule(),
                 new TextRule(),
