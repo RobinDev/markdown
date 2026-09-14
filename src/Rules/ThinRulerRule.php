@@ -21,6 +21,7 @@ final class ThinRulerRule implements Rule, ProvidesFirstChar
     public function parse(Parser $parser): Token
     {
         $content = $parser->consumeWhile('-');
+        $parser->consumeWhile(" \t");
 
         return new RulerToken(
             $content,

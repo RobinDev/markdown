@@ -58,4 +58,20 @@ class ParagraphRuleTest extends ParserTestCase
 
         $this->assertSame("<h2 id=\"first-second\">First\nSecond</h2>", (string) $parser->parse("First\nSecond\n---"));
     }
+
+    #[Test]
+    public function test_setext_heading_followed_by_paragraph(): void
+    {
+        $parser = new Parser(highlighter: null);
+
+        $this->assertSame('<h2 id="title">Title</h2><p>Body</p>', (string) $parser->parse("Title\n---\nBody"));
+    }
+
+    #[Test]
+    public function test_consecutive_setext_headings(): void
+    {
+        $parser = new Parser(highlighter: null);
+
+        $this->assertSame('<h1 id="one">One</h1><h2 id="two">Two</h2>', (string) $parser->parse("One\n===\nTwo\n---"));
+    }
 }

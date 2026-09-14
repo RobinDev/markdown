@@ -25,6 +25,8 @@ final class FrontMatterRuleTest extends ParserTestCase
         $this->assertSame("<hr/>\n", $parser->parse("---\n")->html);
         $this->assertSame('<hr/>', $parser->parse('-----')->html);
         $this->assertSame('<hr/>', new Markdown(highlighter: null)->parse('---')->html);
+        $this->assertSame('<hr/>', new Markdown(highlighter: null)->parse("--- \t")->html);
+        $this->assertSame("<hr/>\n", new Markdown(highlighter: null)->parse("--- \t\n")->html);
     }
 
     #[Test]

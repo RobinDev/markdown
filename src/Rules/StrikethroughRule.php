@@ -8,6 +8,7 @@ use Tempest\Markdown\ProvidesStopChar;
 use Tempest\Markdown\Rule;
 use Tempest\Markdown\Token;
 use Tempest\Markdown\Tokens\StrikethroughToken;
+use Tempest\Markdown\Tokens\TextToken;
 
 final class StrikethroughRule implements Rule, ProvidesFirstChar, ProvidesStopChar
 {
@@ -16,18 +17,17 @@ final class StrikethroughRule implements Rule, ProvidesFirstChar, ProvidesStopCh
 
     public function shouldParse(Parser $parser): bool
     {
-        if (! $parser->comesNext('~', 1)) {
-            return false;
-        }
-
-        $openingLength = strspn($parser->content, '~', $parser->position);
-
-        return strpos($parser->content, '~', $parser->position + $openingLength) !== false;
+        return $parser->comesNext('~', 1);
     }
 
     public function parse(Parser $parser): Token
     {
-        $parser->consumeWhile('~');
+        $opening = $parser->consumeWhile('~');
+
+        if (strpos($parser->content, '~', $parser->position) === false) {
+            return new TextToken($opening);
+        }
+
         $buffer = $parser->consumeUntil('~');
         $parser->consumeWhile('~');
 

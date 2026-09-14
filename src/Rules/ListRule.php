@@ -25,37 +25,40 @@ final class ListRule implements Rule, ProvidesFirstChar
         $newlines = $parser->consumeWhile(Parser::NEW_LINE);
 
         $childContent = '';
-        $indent = strspn($parser->content, ' ', $parser->position);
 
-        while ($indent >= 2 && $parser->current !== null) {
-            if (strspn($parser->content, ' ', $parser->position) < $indent) {
+        while ($parser->current !== null) {
+            $indent = strspn($parser->content, ' ', $parser->position);
+
+            if ($indent >= 2) {
+                while ($parser->current !== null && strspn($parser->content, ' ', $parser->position) >= $indent) {
+                    $parser->consume($indent);
+                    $childContent .= $parser->consumeUntil(Parser::NEW_LINE) . PHP_EOL;
+                    $newlines = $parser->consumeWhile(Parser::NEW_LINE);
+                }
+
+                if (preg_match('/(?:^|\n)[-*+] /', $childContent)) {
+                    break;
+                }
+
+                $content .= ' ' . trim(preg_replace('/\s+/u', ' ', $childContent) ?? '');
+                $childContent = '';
+                continue;
+            }
+
+            if ($newlines !== "\n" && $newlines !== "\r\n") {
                 break;
             }
 
-            $parser->consume($indent);
-            $childContent .= $parser->consumeUntil(Parser::NEW_LINE) . PHP_EOL;
-            $newlines = $parser->consumeWhile(Parser::NEW_LINE);
-        }
-
-        $children = null;
-
-        if (preg_match('/(?:^|\n)[-*+] /', $childContent)) {
-            $children = $parser->withRules(new ListRule())->lex($childContent)[0];
-        }
-
-        if ($children === null && $childContent !== '') {
-            $content .= ' ' . trim(preg_replace('/\s+/u', ' ', $childContent) ?? '');
-        }
-
-        while ($children === null && ($newlines === "\n" || $newlines === "\r\n") && $parser->current !== null) {
             $nextLine = substr($parser->content, $parser->position, strcspn($parser->content, Parser::NEW_LINE, $parser->position));
-            if (trim($nextLine) === '' || preg_match('/^(?:[-*+] |[0-9]+[.)] |#{1,6}[ \t]|> |`{3}|~{3})/', $nextLine)) {
+            if (trim($nextLine) === '' || preg_match('/^(?:[-*+] |[0-9]+[.)] |#{1,6}[ \t]|>|`{3}|~{3}|-{3}|={3}|<|:{3})/', $nextLine)) {
                 break;
             }
 
             $content .= ' ' . trim($parser->consumeUntil(Parser::NEW_LINE));
             $newlines = $parser->consumeWhile(Parser::NEW_LINE);
         }
+
+        $children = $childContent === '' ? null : $parser->withRules(new ListRule())->lex($childContent)[0];
 
         $item = new ListItem($content, $children);
 
