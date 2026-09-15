@@ -80,4 +80,35 @@ class HeadingRuleTest extends ParserTestCase
             $html,
         );
     }
+
+    #[Test]
+    public function lex_generates_an_id_by_default(): void
+    {
+        $html =
+            (string) new Parser(highlighter: null, rules: [new HeadingRule()])->parse(
+                '## A heading',
+            );
+
+        $this->assertSame('<h2 id="a-heading">A heading</h2>', $html);
+    }
+
+    #[Test]
+    public function lex_without_generated_ids(): void
+    {
+        $html = (string) new Parser(highlighter: null, rules: [
+            new HeadingRule(generateIds: false),
+        ])->parse('## A heading');
+
+        $this->assertSame('<h2>A heading</h2>', $html);
+    }
+
+    #[Test]
+    public function lex_keeps_an_explicit_id_without_generated_ids(): void
+    {
+        $html = (string) new Parser(highlighter: null, rules: [
+            new HeadingRule(generateIds: false),
+        ])->parse('## A heading ## custom-id');
+
+        $this->assertSame('<h2 id="custom-id">A heading</h2>', $html);
+    }
 }

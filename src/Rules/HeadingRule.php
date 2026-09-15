@@ -12,6 +12,14 @@ final class HeadingRule implements Rule, ProvidesFirstChar
 {
     public string $firstChar = '#';
 
+    public function __construct(
+        /**
+         * Whether a heading without an explicit id gets one slugged from its
+         * content. An id written as `## Title ## id` is kept either way.
+         */
+        public bool $generateIds = true,
+    ) {}
+
     public function shouldParse(Parser $parser): bool
     {
         return $parser->comesNext('#', 1);
@@ -37,7 +45,7 @@ final class HeadingRule implements Rule, ProvidesFirstChar
                 |> trim(...);
             $buffer = substr(string: $buffer, offset: 0, length: $idSeparator)
                 |> trim(...);
-        } else {
+        } elseif ($this->generateIds) {
             // No id is specified, we'll slug the heading
             $id = $buffer
                 |> mb_strtolower(...)
@@ -45,6 +53,8 @@ final class HeadingRule implements Rule, ProvidesFirstChar
                     preg_replace('/[^\p{L}\p{N}]+/u', '-', $x) ?? '',
                     '-',
                 ));
+        } else {
+            $id = null;
         }
 
         return new HeadingToken(
