@@ -40,7 +40,10 @@ class OrderedListRuleTest extends ParserTestCase
                 "10. ten\n11. eleven\n",
             );
 
-        $this->assertSame('<ol><li>ten</li><li>eleven</li></ol>', $html);
+        $this->assertSame(
+            '<ol start="10"><li>ten</li><li>eleven</li></ol>',
+            $html,
+        );
     }
 
     #[Test]
@@ -116,5 +119,30 @@ class OrderedListRuleTest extends ParserTestCase
             );
 
         $this->assertSame('', $html);
+    }
+
+    #[Test]
+    public function lex_keeps_the_start_number(): void
+    {
+        $html =
+            (string) new Parser(highlighter: null, rules: [new OrderedListRule()])->parse(
+                "2. two\n3. three\n",
+            );
+
+        $this->assertSame(
+            '<ol start="2"><li>two</li><li>three</li></ol>',
+            $html,
+        );
+    }
+
+    #[Test]
+    public function lex_omits_the_start_attribute_when_the_list_starts_at_one(): void
+    {
+        $html =
+            (string) new Parser(highlighter: null, rules: [new OrderedListRule()])->parse(
+                "1. one\n5. five\n",
+            );
+
+        $this->assertSame('<ol><li>one</li><li>five</li></ol>', $html);
     }
 }

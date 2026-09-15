@@ -39,7 +39,7 @@ final class OrderedListRule implements Rule, ProvidesFirstChar
 
     public function parse(Parser $parser): ?Token
     {
-        $parser->consumeWhile('0123456789');
+        $number = $parser->consumeWhile('0123456789');
         $parser->consumeIncluding('.');
         $content = trim($parser->consumeUntil(Parser::NEW_LINE));
         $parser->consumeWhile(Parser::NEW_LINE);
@@ -68,6 +68,6 @@ final class OrderedListRule implements Rule, ProvidesFirstChar
             return null;
         }
 
-        return new OrderedListToken([$item]);
+        return new OrderedListToken([$item], (int) $number);
     }
 }
