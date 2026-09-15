@@ -3,6 +3,8 @@
 namespace Tempest\Markdown\Tokens;
 
 use Tempest\Markdown\Parser;
+use Tempest\Markdown\Rules\CodeRule;
+use Tempest\Markdown\Rules\ImageRule;
 use Tempest\Markdown\Rules\ItalicRule;
 use Tempest\Markdown\Rules\LinkRule;
 use Tempest\Markdown\Rules\SocialHandleRule;
@@ -22,8 +24,10 @@ final class BoldToken implements Token
             ->forToken($this, [
                 new ItalicRule(),
                 new StrikethroughRule(),
+                new CodeRule(),
                 new LinkRule(),
                 new SocialHandleRule(),
+                new ImageRule(),
                 new TextRule(),
             ])
             ->parse($this->content);

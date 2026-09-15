@@ -13,6 +13,7 @@ use Tempest\Markdown\Rules\LinkRule;
 use Tempest\Markdown\Rules\PreRule;
 use Tempest\Markdown\Rules\QuoteRule;
 use Tempest\Markdown\Rules\SocialHandleRule;
+use Tempest\Markdown\Rules\StrikethroughRule;
 use Tempest\Markdown\Rules\TextRule;
 use Tempest\Markdown\Token;
 
@@ -32,6 +33,7 @@ final class DivToken implements Token
                 new BoldAndItalicRule(),
                 new BoldRule(),
                 new ItalicRule(),
+                new StrikethroughRule(),
                 new LinkRule(),
                 new SocialHandleRule(),
                 new ImageRule(),
