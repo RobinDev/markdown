@@ -10,6 +10,13 @@ use Tempest\Markdown\Tokens\HtmlToken;
 
 final class HtmlRule implements Rule, ProvidesFirstChar
 {
+    /**
+     * Elements whose content is raw text rather than Markdown.
+     *
+     * @see https://spec.commonmark.org/0.31.2/#html-blocks
+     */
+    private const array RAW_TEXT_TAGS = ['pre', 'script', 'style', 'textarea'];
+
     public string $firstChar = '<';
 
     public function shouldParse(Parser $parser): bool
@@ -84,6 +91,13 @@ final class HtmlRule implements Rule, ProvidesFirstChar
 
         $content .= $parser->consumeWhile(Parser::NEW_LINE);
 
-        return new HtmlToken($content);
+        return new HtmlToken(
+            $content,
+            raw: in_array(
+                strtolower($tagName),
+                self::RAW_TEXT_TAGS,
+                strict: true,
+            ),
+        );
     }
 }
