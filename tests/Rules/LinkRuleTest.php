@@ -11,6 +11,31 @@ use Tempest\Markdown\Tests\ParserTestCase;
 class LinkRuleTest extends ParserTestCase
 {
     #[Test]
+    public function title_preserves_backslash_before_letter(): void
+    {
+        $parser = new Parser(highlighter: null, rules: [new LinkRule()]);
+
+        $this->assertSame(
+            '<a href="/a" title="a\b">x</a>',
+            (string) $parser->parse('[x](/a "a\b")'),
+        );
+    }
+
+    #[Test]
+    public function unescaped_opening_parenthesis_in_title_stays_literal(): void
+    {
+        $parser = new Parser(highlighter: null, rules: [
+            new LinkRule(),
+            new TextRule(),
+        ]);
+
+        $this->assertSame(
+            '[x](/a (b(c))',
+            (string) $parser->parse('[x](/a (b(c))'),
+        );
+    }
+
+    #[Test]
     public function test_lex(): void
     {
         $html =
