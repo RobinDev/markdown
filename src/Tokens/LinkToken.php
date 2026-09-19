@@ -17,10 +17,10 @@ final class LinkToken implements Token
     public function __construct(
         public string $content,
         public ?string $href,
-        public ?string $title = null,
 
         // @todo(aidan-casey): This is a temporary solution to the problem that we don't support Markdown escaping yet.
         public bool $parseContent = true,
+        public ?string $title = null,
     ) {}
 
     public function parse(Parser $parser): string

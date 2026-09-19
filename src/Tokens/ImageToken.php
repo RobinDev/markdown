@@ -16,7 +16,18 @@ final readonly class ImageToken implements Token
     public function parse(Parser $parser): string
     {
         if ($parser->imageFactory) {
-            return $parser->imageFactory->create($this->src, $this->alt)->html;
+            $html = $parser->imageFactory->create($this->src, $this->alt)->html;
+
+            if ($this->title === null) {
+                return $html;
+            }
+
+            return (
+                substr($html, 0, -1)
+                . ' title="'
+                . htmlspecialchars($this->title, ENT_QUOTES)
+                . '">'
+            );
         }
 
         $alt = $this->alt

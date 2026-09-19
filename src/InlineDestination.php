@@ -10,6 +10,8 @@ namespace Tempest\Markdown;
  */
 final readonly class InlineDestination
 {
+    private const string ESCAPABLE = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
+
     private const string BARE_STOP_CHARS = '\\()' . Parser::WHITESPACE;
 
     private const string ANGLE_STOP_CHARS = '\\<>' . Parser::NEW_LINE;
@@ -91,8 +93,7 @@ final readonly class InlineDestination
             $character = $content[$position] ?? null;
 
             if ($character === '\\' && isset($content[$position + 1])) {
-                $destination .= $content[$position + 1];
-                $position += 2;
+                $destination .= self::scanEscape($content, $position);
 
                 continue;
             }
@@ -131,8 +132,7 @@ final readonly class InlineDestination
             $character = $content[$position] ?? null;
 
             if ($character === '\\' && isset($content[$position + 1])) {
-                $destination .= $content[$position + 1];
-                $position += 2;
+                $destination .= self::scanEscape($content, $position);
 
                 continue;
             }
@@ -178,7 +178,7 @@ final readonly class InlineDestination
         }
 
         $length = strlen($content);
-        $stopChars = '\\' . $closing;
+        $stopChars = '\\' . $closing . ($opening === '(' ? '(' : '');
         $title = '';
         $position++;
 
@@ -193,10 +193,13 @@ final readonly class InlineDestination
             $character = $content[$position] ?? null;
 
             if ($character === '\\' && isset($content[$position + 1])) {
-                $title .= $content[$position + 1];
-                $position += 2;
+                $title .= self::scanEscape($content, $position);
 
                 continue;
+            }
+
+            if ($opening === '(' && $character === '(') {
+                return null;
             }
 
             if ($character === $closing) {
@@ -207,6 +210,21 @@ final readonly class InlineDestination
         }
 
         return null;
+    }
+
+    private static function scanEscape(string $content, int &$position): string
+    {
+        $next = $content[$position + 1];
+
+        if (str_contains(self::ESCAPABLE, $next)) {
+            $position += 2;
+
+            return $next;
+        }
+
+        $position++;
+
+        return '\\';
     }
 
     private static function skipWhitespace(string $content, int $position): int

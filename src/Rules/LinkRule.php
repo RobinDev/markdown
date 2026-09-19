@@ -45,9 +45,9 @@ final class LinkRule implements Rule, ProvidesFirstChar, ProvidesStopChar
         $parser->consume($destination->length);
 
         return new LinkToken(
-            $content,
-            $destination->destination,
-            $destination->title,
+            content: $content,
+            href: $destination->destination,
+            title: $destination->title,
         );
     }
 
